@@ -1,0 +1,53 @@
+###usage
+
+perl Ancestry_HMM_parallel_v3.pl read_list
+
+###set parameters in configuration file:
+
+hmm_configuration_file.cfg
+
+###In the configuration file, give absolute paths from the directory where the jobs are submitted in the configuration file
+##for example:
+
+./example/genome1.fa
+
+#instead of:
+
+genome1.fa
+
+###the full path is also needed in the reads list, and that list needs to be in the directory where the analysis is being run 
+
+###############
+###DEPENDENCIES:
+###############
+
+###depends on the following programs that most clusters will already have installed:
+##bwa ~(v0.7.15)
+##samtools ~(v1.3.1)
+##bcftools ~(1.3.1)
+
+###depends on the following packages/libraries that will probably not already be installed
+##armadillo #wget http://sourceforge.net/projects/arma/files/armadillo-7.960.0.tar.xz
+##gperftools #git clone https://github.com/gperftools/gperftools.git
+##ngsutils #git clone git://github.com/ngsutils/ngsutils.git
+##Ancestry_HMM # git clone https://github.com/russcd/Ancestry_HMM.git
+###NOTE: Ancestry_HMM will not install properly without armadillo and gperftools
+
+##to test whether the pipeline will have required dependencies before running, go to the folder where you will submit the job and type:
+
+bwa
+samtools
+bcftools
+bamutils
+
+#if all of these print the usage, then you are good to go!
+
+ancestry_hmm
+
+#for this command, it will not print usage, but if it prints: 
+
+reading command line
+ERROR: must provide input file
+-i [path/to/input_file]
+
+#it is installed properly
