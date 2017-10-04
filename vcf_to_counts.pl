@@ -41,7 +41,11 @@ while(my $line = <IN>){
 	my $refcount=$deptharray[0]+$deptharray[1];
 	my $altcount=$deptharray[2]+$deptharray[3];
 
-	print OUT "$group"."_"."$pos\t$ref\t$alt\t$refcount\t$altcount\n";
+	my @bparray=();
+	push(@bparray,($ref,$alt));
+	my @sortedbp=sort { lc($a) cmp lc($b) } @bparray;
+
+	print OUT "$group"."_"."$pos"."_"."$sortedbp[0]"."_"."$sortedbp[1]\t$refcount\t$altcount\n";
 
 	#print "$geno\t$line\n";
 	}#homo
@@ -55,7 +59,11 @@ while(my $line = <IN>){
 	    my $refcount=$deptharray[0]+$deptharray[1];
 	    my $altcount=$deptharray[2]+$deptharray[3];
 
-	    print OUT "$group"."_"."$pos\t$ref\t$alt\t$refcount\t$altcount\n";
+	    my @bparray=();
+	    push(@bparray,($ref,$alt));
+	    my @sortedbp=sort { lc($a) cmp lc($b) } @bparray;
+
+	    print OUT "$group"."_"."$pos"."_"."$sortedbp[0]"."_"."$sortedbp[1]\t$refcount\t$altcount\n";
 
 	}#hets
 	else{
@@ -71,7 +79,10 @@ while(my $line = <IN>){
             my $refcount=$deptharray[0]+$deptharray[1];
             my $altcount=$deptharray[2]+$deptharray[3];
 
-            print OUT "$group"."_"."$pos\t$alt1\t$alt2\t$refcount\t$altcount\n";
+	    my @bparray=();
+            push(@bparray,($alt1,$alt2));
+            my @sortedbp=sort { lc($a) cmp lc($b) } @bparray;
+            print OUT "$group"."_"."$pos"."_"."$sortedbp[0]"."_"."$sortedbp[1]\t$refcount\t$altcount\n";
 
 	}
 	#print "$refcount\t$altcount\n";

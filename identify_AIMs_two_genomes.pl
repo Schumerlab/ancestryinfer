@@ -28,17 +28,22 @@ while((my $line1=<IN1>) && (my $line2=<IN2>)){
 	die;
     }
 
+    
     for my $i (0..scalar(@elements1)-1){
+	my @bparray=();
 
 	$pos=$pos+1;
 
 	$focal1=$elements1[$i]; chomp $focal1;
 	$focal2=$elements2[$i]; chomp $focal2;
 
-#!	print "$focal1\t$focal2\n";
+	push(@bparray, $focal1);
+	push(@bparray, $focal2);
+	
+	my @sortedbp=sort { lc($a) cmp lc($b) } @bparray;
 
 	if(($focal1 ne $focal2) && ($focal1 !~ /[RYSWKMN]/) && ($focal2 !~ /[RYSWKMN]/)){
-	    print "$lg"."_"."$pos\t$focal1\t$focal2\n";
+	    print "$lg"."_"."$pos"."_"."$sortedbp[0]"."_"."$sortedbp[1]\n";
 
 	}#sites are AIMs in genome
 

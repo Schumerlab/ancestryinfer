@@ -4,7 +4,7 @@ my $config=shift(@ARGV); chomp $config;
 open CONFIG, $config or die "cannot open configuration file\n";
 
 my $genome1=""; my $genome2=""; my $read_type=""; my $read_list=""; my $read_length=""; my $number_indiv_per_job="";
-my $num_jobs=""; my $job1_submit=""; my $job2_submit=""; my $job3_submit=""; my $minor_prior="";
+my $num_jobs=""; my $job1_submit=""; my $job2_submit=""; my $job3_submit=""; my $minor_prior=""; my $prefix="";
 while (my $line=<CONFIG>){
 
     chomp $line;
@@ -37,7 +37,7 @@ while (my $line=<CONFIG>){
 	$number_indiv_per_job=$elements[1]; chomp $number_indiv_per_job;
        
 	print "task being split into $number_indiv_per_job per job\n";
-	my $prefix="$read_list.";
+	$prefix="$read_list.";
 	system("rm $prefix*");
 	system("split -d -e -l $number_indiv_per_job $read_list $prefix"); 
 	system("ls $prefix* > split_jobs_list");
@@ -144,5 +144,7 @@ my $hyb_string=""; my $par_string="";
     print HMMSCRIPT "cat $hyb_string > HMM.hybrid.files.list\n";
     print HMMSCRIPT "cat $par_string >HMM.parental.files.list\n";
     print HMMSCRIPT "perl combine_all_individuals_hmm_v4.pl HMM.parental.files.list HMM.hybrid.files.list $minor_prior\n";
+    print HMMSCRIPT "perl convert_rchmm_to_ancestry_tsv_v2.pl current.samples.list $read_list\n";
+    print HMMSCRIPT "perl transpose_tsv.pl ancestry-probs-par1_transposed.tsv\n";
+    print HMMSCRIPT "perl transpose_tsv.pl ancestry-probs-par2_transposed.tsv\n";
     system("sbatch --dependency=afterok:$slurm_sam_string hmm_batch.sh");
-

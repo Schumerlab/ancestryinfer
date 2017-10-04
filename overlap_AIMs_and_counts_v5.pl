@@ -1,57 +1,38 @@
 #perl! -w
 
-my $aims=shift(@ARGV); chomp $aims;
-open AIMS, $aims or die "cannot open AIMs file\n";
+###Snippet modifed from the FAS scriptome merge by columns snippet
+my $f1=shift(@ARGV); chomp $f1;
+my $f2=shift(@ARGV); chomp $f2;
 
-my $counts=shift(@ARGV); chomp $counts;
-#!open COUNTS, $counts or die "cannot open counts file\n";
+open OUT, ">"."$f2".".hmm";
 
-open OUT, ">"."$counts".".hmm";
+$col1=0;
+$col2=0;
 
-my $match=""; my $combined="";
-my $site=""; my $group="";
-while(my $line =<AIMS>){
+open(F2,$f2);
+while (<F2>) {
+    s/\r?\n//;
+    @F=split /\t/, $_;
+    $line2{$F[$col2]} .= "$_\n"
+};
+$count2 = $.;
+open(F1,$f1);
+while (<F1>) {
+    s/\r?\n//;
+    @F=split /\t/, $_;
+    $x = $line2{$F[$col1]}; chomp $x;
+    if ($x) {
+	$x=~ s/\_[a-zA-Z]//g;
+	my @elements_match=split(/\t/,$x);
+       
+	print OUT "$elements_match[0]"."\t"."20\t0\t0\t20\t0.0006\t"."$elements_match[1]"."\t"."$elements_match[2]\n";
+	$merged += $num_changes
+    }
+    else{
+	
+	$_ =~ s/\_[a-zA-Z]//g;
+	#print $_,"\t20\t0"."\n";
+	print OUT "$_"."\t"."20\t0\t0\t20\t0.0006\t0\t0\n"
+    }
 
-    chomp $line;
-
-    my @data=split(/\t/,$line);
-    $combined=$data[0]; chomp $combined;
-    my @split_data=split(/_/,$combined);
-    $group=$split_data[0]; chomp $group;
-    $group =~ s/group//g;
-    $site=$split_data[1]; chomp $site;
-
-    my $ref_alt="$data[1]"."$data[2]"; chomp $ref_alt;
- 
-    $match=qx(grep -w $combined $counts); chomp $match;
-
-    my $base1=""; my $base2=""; my $counts1=0; my $counts2=0;
-    if(length($match)>0){
-
-	my @matched_data=split(/\t/,$match);
-	$base1=$matched_data[1]; chomp $base1;
-	$base2=$matched_data[2]; chomp $base2;
-	$counts1=$matched_data[3]; chomp $counts1;
-	$counts2=$matched_data[4]; chomp $counts2;
-
-	#!print "$base1\t$base2\t$counts1\t$counts2\n";
-
-	my $order1="$base1"."$base2"; chomp $order1;
-	my $order2="$base2"."$base1"; chomp $order2;
-
-	if(($order1 == $ref_alt) or ($order2 == $ref_alt)){
-	    print OUT "$group"."_"."$site\t20\t0\t0\t20\t0.0006\t$counts1\t$counts2\n";
-	}#if match
-	else{
-	#!    print "$group\t$site\t1\t0\t0\t1\t0.0006\t0\t0\n";
-	#!print "$combined\t$data[1]\t$data[2]\t0\t0\n";
-	}#if some discordance, non-biallelic/AIM
-
-    }#if there is a hits
-    elsif(length($match)==0){
-	    print OUT "$group"."_"."$site\t20\t0\t0\t20\t0.0006\t0\t0\n";
-    }#if the AIM is not sampled in this individual
-
-    $match="";
-
-}#for all lines in AIMs file
+}

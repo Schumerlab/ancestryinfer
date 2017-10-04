@@ -6,8 +6,9 @@ if(@ARGV<4){
 
 }#usage
 
-my $infile1=shift(@ARGV); chomp $infile1;
-open IN, $infile1 or die "cannot open sim id list\n";
+my $infile1=shift(@ARGV); chomp $infile1; my $trimmed="$infile1"."_trim";
+system("cut -f 1 $infile1 > $trimmed");
+open IN, $trimmed or die "cannot open indiv id list\n";
 
 my $genome1=shift(@ARGV); chomp $genome1;
 
@@ -89,6 +90,8 @@ while (my $id = <IN>){
     system("samtools view -b -q 30 $sorted2 > $unique2"); # this is for mapped reads with poor mapping quality                  
 
     print OUT "$unique2\n";
+
+
 
 #####JOINT FILTERING
     my $par1_pass="$unique1"."_par1_passlist";
@@ -185,6 +188,9 @@ while (my $id = <IN>){
     my $indivfilecurr="$hmm".".pass.formatted";
     push(@parfilelist, $parfilecurr);
     push(@indivfilelist,$indivfilecurr);
+
+##cleanup intermediate files
+    system("rm $bam1 $bam2 $sorted1 $sorted2 $unique1 $unique2");
 
 }
 
