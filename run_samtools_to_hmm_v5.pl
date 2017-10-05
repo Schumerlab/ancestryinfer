@@ -190,7 +190,7 @@ while (my $id = <IN>){
     push(@indivfilelist,$indivfilecurr);
 
 ##cleanup intermediate files
-    system("rm $bam1 $bam2 $sorted1 $sorted2 $unique1 $unique2");
+    system("rm $line1 $line2 $bam1 $bam2 $sorted1 $sorted2 $unique1 $unique2 $mpileup1 $mpileup2 $vcf1 $vcf2");
 
 }
 

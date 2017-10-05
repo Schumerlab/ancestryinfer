@@ -98,11 +98,12 @@ my $hyb_string=""; my $par_string="";
     for my $j (0..scalar(@jobs)-1){
     my $current_job=$jobs[$j];
     #print "$current_job\n";
-    open MAPSCRIPT, ">map_batch.sh";
+    my $mapscript="map_batch"."$j".".sh";
+    open MAPSCRIPT, ">$mapscript";
     print MAPSCRIPT "$job1_submit\n";
     print MAPSCRIPT "perl run_map_v3.pl $current_job $genome1 $genome2 $read_type\n";
     
-    my $id=qx(sbatch map_batch.sh);
+    my $id=qx(sbatch $mapscript);
     $id=~ s/Submitted batch job //g; chomp $id;
     push(@slurm_ids_map,$id);
     print "submitting mapping batch id $id\n";
@@ -122,13 +123,14 @@ my $hyb_string=""; my $par_string="";
 	    $par_string="$par_string"." "."$parfile"." ";
 	}#generate file strings for next step
 
-	open VARSCRIPT, ">samtools_batch.sh";
+	my $samscript="samtools_batch"."$m".".sh";
+	open VARSCRIPT, ">$samscript";
 	print VARSCRIPT "$job2_submit\n";
 	print VARSCRIPT "perl run_samtools_to_hmm_v5.pl $current_job $genome1 $genome2 150\n";
 
 	my $map_depend=$slurm_ids_map[$m];
 
-	my $id=qx(sbatch --dependency=afterok:$map_depend samtools_batch.sh);
+	my $id=qx(sbatch --dependency=afterok:$map_depend $samscript);
 	$id=~ s/Submitted batch job //g; chomp $id;
 	if($m==0){
 	    $slurm_sam_string="$id";
