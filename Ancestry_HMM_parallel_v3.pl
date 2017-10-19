@@ -103,8 +103,10 @@ my $hyb_string=""; my $par_string="";
     print MAPSCRIPT "$job1_submit\n";
     print MAPSCRIPT "perl run_map_v3.pl $current_job $genome1 $genome2 $read_type\n";
     
-    my $id=qx(sbatch $mapscript);
-    $id=~ s/Submitted batch job //g; chomp $id;
+    my $id_temp=qx(sbatch $mapscript); chomp $id_temp;
+    my @idarray=split(/\n/,$id_temp);
+    $id=$idarray[0]; chomp $id;
+    $id=~ s/\D//g;
     push(@slurm_ids_map,$id);
     print "submitting mapping batch id $id\n";
     }#all mapping
@@ -130,8 +132,10 @@ my $hyb_string=""; my $par_string="";
 
 	my $map_depend=$slurm_ids_map[$m];
 
-	my $id=qx(sbatch --dependency=afterok:$map_depend $samscript);
-	$id=~ s/Submitted batch job //g; chomp $id;
+	my $id_temp=qx(sbatch --dependency=afterok:$map_depend $samscript); chomp $id_temp;
+	my @idarray=split(/\n/,$id_temp);
+	$id=$idarray[0]; chomp $id;
+	$id=~ s/\D//g;
 	if($m==0){
 	    $slurm_sam_string="$id";
 	} else{
