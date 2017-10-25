@@ -17,6 +17,9 @@ genome1.fa
 
 ###the full path is also needed in the reads list, and that list needs to be in the directory where the analysis is being run 
 
+###WARNING:
+if you provide an AIMs file and parental count file in the configuration file, these files must be in the same order and contain exactly the same sites. Coordinates given in these files must match the provided genomes. See swordtail examples for file format.
+
 ###############
 ###DEPENDENCIES:
 ###############
