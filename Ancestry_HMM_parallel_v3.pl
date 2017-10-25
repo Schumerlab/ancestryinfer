@@ -5,6 +5,7 @@ open CONFIG, $config or die "cannot open configuration file\n";
 
 my $genome1=""; my $genome2=""; my $read_type=""; my $read_list=""; my $read_length=""; my $number_indiv_per_job="";
 my $num_jobs=""; my $job1_submit=""; my $job2_submit=""; my $job3_submit=""; my $minor_prior=""; my $prefix="";
+my $provide_AIMs=""; my $provide_counts=""; my $parental_counts_status="";
 while (my $line=<CONFIG>){
 
     chomp $line;
@@ -57,6 +58,17 @@ while (my $line=<CONFIG>){
 	$job3_submit="#"."$job3[1]"."\n"."#"."$job3[2]"."\n"."#"."$job3[3]"."\n"."#"."$job3[4]"."\n"."#"."$job3[5]"."\n"; chomp $job3_submit;
         print "cluster command for job3 is: $job3_submit\n";
     }#mapping command 
+    if($line =~ /provide_AIMs/){
+	$provide_AIMs=$elements[1]; chomp $provide_AIMs;
+    }#aims list if provided
+    if($line =~ /provide_counts/){
+        $provide_counts=$elements[1]; chomp $provide_counts;
+	if(length($provide_counts)>0){
+	$parental_counts_status=$provide_counts;
+	} else{
+	$parental_counts_status=0;
+	}#id variable
+    }#aims list if provided 
 
 }#read in the configuration file
 
@@ -80,6 +92,43 @@ if(! -f $g1bwt){
 if(! -f $g2bwt){
     system("bwa index $genome2");
 }#index files for genome2 missing, build
+
+
+#####generate AIMs list or identify use-defined AIMs list
+
+if(length($provide_AIMs)==0){
+
+my $aims="all_AIMs_"."$genome1"."_"."$genome2";
+
+$aims=~ s/\.\///g;
+$aims=~ s/\//_/g;
+
+if((! -f $aims) or (! -f "current_aims_file")){
+    system("perl identify_AIMs_two_genomes.pl $genome1 $genome2 > $aims");
+    open AIMSFILE, ">current_aims_file";
+    print AIMSFILE "$aims\n";
+}#if aims file and key do not exist, write them                                                                                                                                                   
+else{
+print "aims files $aims and current_aims_file exist, not overwriting\n"
+}#warn about the re-use of these files
+
+}#no aims are provided, generate
+elsif(-f $provide_AIMs){
+    my $aims="all_AIMs_"."$genome1"."_"."$genome2";
+
+    $aims=~ s/\.\///g;
+    $aims=~ s/\//_/g;
+
+    system("cp $provide_AIMs $aims");
+    open AIMSFILE, ">current_aims_file";
+    print AIMSFILE "$aims\n";
+
+}#aims file defined and exists
+elsif(! -f $provide_AIMs){
+
+    die "cannot open the user defined AIMs file $provide_AIMs\n";
+
+}#aims file defined but does not exist
 
 #####jobs array
 my @jobs=();
@@ -149,7 +198,8 @@ my $hyb_string=""; my $par_string="";
     print HMMSCRIPT "$job3_submit\n";
     print HMMSCRIPT "cat $hyb_string > HMM.hybrid.files.list\n";
     print HMMSCRIPT "cat $par_string >HMM.parental.files.list\n";
-    print HMMSCRIPT "perl combine_all_individuals_hmm_v4.pl HMM.parental.files.list HMM.hybrid.files.list $minor_prior\n";
+    print HMMSCRIPT "perl combine_all_individuals_hmm_v4.pl HMM.parental.files.list HMM.hybrid.files.list $minor_prior $parental_counts_status\n";
+print "perl combine_all_individuals_hmm_v4.pl HMM.parental.files.list HMM.hybrid.files.list $minor_prior $parental_counts_status\n";
     print HMMSCRIPT "perl convert_rchmm_to_ancestry_tsv_v2.pl current.samples.list $read_list\n";
     print HMMSCRIPT "perl transpose_tsv.pl ancestry-probs-par1_transposed.tsv\n";
     print HMMSCRIPT "perl transpose_tsv.pl ancestry-probs-par2_transposed.tsv\n";

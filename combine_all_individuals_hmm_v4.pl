@@ -13,6 +13,25 @@ open LIST, $list or die "cannot open individual list file\n";
 my $par1_prior=shift(@ARGV); chomp $par1_prior;
 if(length($par1_prior)==0){ die "parental priors required\n";}
 
+my $provide_counts=shift(@ARGV); chomp $provide_counts;
+
+if(length($provide_counts) > 1){
+    print "parental counts were provided: $provide_counts\n";
+    my $count_length=qx(wc -l $provide_counts | perl -pi -e 's/ +/\t/g' | cut -f 1); chomp $count_length;
+
+    my $aims_list="current_aims_file"; chomp $aims_list;
+    open AIMSLIST, $aims_list or die "cannot open AIMs list\n";
+
+    my $aims=<AIMSLIST>; chomp $aims;
+
+    my $aims_length=qx(wc -l $aims | perl -pi -e 's/ +/\t/g' | cut -f 1); chomp $aims_length;
+
+    if($aims_length != $count_length){
+	die "aims list and parental counts lists have different length, cannot proceed\n";
+    }#check
+
+}#check that provided counts are the same length as the aims
+
 open OUT, ">current.samples.list";
 
 my $counter=0;
@@ -23,7 +42,12 @@ while ((my $line1=<LIST>) && (my $line2=<PAR>)){
     chomp $line1; chomp $line2;
 
     if($counter==1){
+	if(length($provide_counts) > 1){
+	    $string="$provide_counts"." "."$line1"." ";
+	}
+	else{
        $string="$line2"." "."$line1"." ";
+	}
     } else{
 	$string="$string"." "."$line1"." ";
     }

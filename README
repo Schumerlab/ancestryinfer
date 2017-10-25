@@ -1,6 +1,6 @@
 ###usage
 
-perl Ancestry_HMM_parallel_v3.pl read_list
+perl Ancestry_HMM_parallel_v3.pl hmm_configuration_file.cfg
 
 ###set parameters in configuration file:
 

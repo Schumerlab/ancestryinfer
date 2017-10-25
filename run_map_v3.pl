@@ -61,16 +61,3 @@ while(my $line1 =<IN1>){
 
 }#map each read in list
 
-my $aims="all_AIMs_"."$genome1"."_"."$genome2";
-
-$aims=~ s/\.\///g;
-$aims=~ s/\//_/g;
-
-if((! -f $aims) or (! -f "current_aims_file")){
-system("perl identify_AIMs_two_genomes.pl $genome1 $genome2 > $aims");
-open AIMSFILE, ">current_aims_file";
-print AIMSFILE "$aims\n";
-}#if aims file and key do not exist, write them
-else{
-print "aims files $aims and current_aims_file exist, not overwriting\n"
-}
