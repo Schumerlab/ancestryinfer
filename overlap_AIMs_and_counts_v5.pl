@@ -25,14 +25,14 @@ while (<F1>) {
 	$x=~ s/\_[a-zA-Z]//g;
 	my @elements_match=split(/\t/,$x);
        
-	print OUT "$elements_match[0]"."\t"."20\t0\t0\t20\t0.0006\t"."$elements_match[1]"."\t"."$elements_match[2]\n";
+	print OUT "$elements_match[0]"."\t"."20\t0\t0\t20\t0.00006\t"."$elements_match[1]"."\t"."$elements_match[2]\n";
 	$merged += $num_changes
     }
     else{
 	
 	$_ =~ s/\_[a-zA-Z]//g;
 	#print $_,"\t20\t0"."\n";
-	print OUT "$_"."\t"."20\t0\t0\t20\t0.0006\t0\t0\n"
+	print OUT "$_"."\t"."20\t0\t0\t20\t0.00006\t0\t0\n"
     }
 
 }

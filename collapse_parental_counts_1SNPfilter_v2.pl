@@ -11,11 +11,7 @@ my $read_length=shift(@ARGV); chomp $read_length;
 
 open OUT1, ">"."$infile".".pass.formatted";
 open OUT2, ">"."$infile"."parental.format";
-open FAIL, ">"."$infile".".failingsites";
 
-my $par1count_map1=0; my $par2count_map1=0;
-my $par1count_map2=0; my $par2count_map2=0;
-my @failed_sites;
 my $focal_site="";
 my $par1_ref="";
 my $par1_alt="";
