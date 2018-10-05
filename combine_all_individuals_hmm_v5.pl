@@ -21,6 +21,8 @@ my $focal_chrom=shift(@ARGV); chomp $focal_chrom;
 
 my $read_length=shift(@ARGV); chomp $read_length;
 
+my $error_prior=shift(@ARGV); chomp $error_prior;
+
 open READLIST, ">current.samples.read.list";
 
 my $prior_admix=0;
@@ -79,7 +81,10 @@ while ((my $line1=<LIST>) && (my $line2=<PAR>)){
     }
 
     my $posterior="$line1".".posterior";
-    print OUT "$posterior\t2\n";
+    my @split_posterior=split(/\//,$posterior);
+    my $trimmed_posterior=$split_posterior[-1];
+ 
+    print OUT "$trimmed_posterior\t2\n";
     print READLIST "$current_counts\n";
     }#ensure proper counts file has been generated, if not warn
     else{print "WARNING $line1 does not contain the appropriate number of markers\n";}
@@ -170,16 +175,16 @@ system("mv all.indivs.hmm.combined.filtered all.indivs.hmm.combined.filtered_foc
 ####run differently depending on whether prior generation is provided:
 my $par2_prior=1-$par1_prior;
 if($prior_admix==0){
-    print "Running HMM "; print "ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 -100 $par1_prior -p 1 -100 $par2_prior -s current.samples.list -i all.indivs.hmm.combined.filtered_focalchroms\n";
-    system("ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 -100 $par1_prior -p 1 -100 $par2_prior -s current.samples.list -i all.indivs.hmm.combined.filtered_focalchroms");
+    print "Running HMM "; print "ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 -100 $par1_prior -p 1 -100 $par2_prior -e $error_prior -s current.samples.list -i all.indivs.hmm.combined.filtered_focalchroms\n";
+    system("ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 -100 $par1_prior -p 1 -100 $par2_prior -e $error_prior -s current.samples.list -i all.indivs.hmm.combined.filtered_focalchroms");
 } else{
 
     if($par1_prior ge $par2_prior){
-	print "Running HMM "; print "ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 -100 $par1_prior -p 1 $initial_admix $par2_prior -s current.samples.list -i all.indivs.hmm.combined.filtered_focalchroms","\n";
-    system("ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 -100 $par1_prior -p 1 $initial_admix $par2_prior -s current.samples.list -i all.indivs.hmm.combined.filtered_focalchroms");
+	print "Running HMM "; print "ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 -100 $par1_prior -p 1 $initial_admix $par2_prior -e $error_prior -s current.samples.list -i all.indivs.hmm.combined.filtered_focalchroms","\n";
+    system("ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 -100 $par1_prior -p 1 $initial_admix $par2_prior -e $error_prior -s current.samples.list -i all.indivs.hmm.combined.filtered_focalchroms");
     } else{
-	print "Running HMM "; print "ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 $initial_admix $par1_prior -p 1 -100 $par2_prior -s current.samples.list -i all.indivs.hmm.combined.filtered_focalchroms","\n";
-    system("ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 $initial_admix $par1_prior -p 1 -100 $par2_prior -s current.samples.list -i all.indivs.hmm.combined.filtered_focalchroms");
+	print "Running HMM "; print "ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 $initial_admix $par1_prior -p 1 -100 $par2_prior -e $error_prior -s current.samples.list -i all.indivs.hmm.combined.filtered_focalchroms","\n";
+    system("ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 $initial_admix $par1_prior -p 1 -100 $par2_prior -e $error_prior -s current.samples.list -i all.indivs.hmm.combined.filtered_focalchroms");
     }#format properly depending on which parent is the major parent
 
 }#if no gen is provided

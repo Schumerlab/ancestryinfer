@@ -4,7 +4,7 @@ my $config=shift(@ARGV); chomp $config;
 open CONFIG, $config or die "cannot open configuration file\n";
 
 my $genome1=""; my $genome2=""; my $read_type=""; my $read_list=""; my $read_length=""; my $number_indiv_per_job=""; my $initial_admix=0; my $focal_chrom=0;
-my $num_jobs=""; my $job1_submit=""; my $job2_submit=""; my $job3_submit=""; my $minor_prior=""; my $prefix="";
+my $num_jobs=""; my $job1_submit=""; my $job2_submit=""; my $job3_submit=""; my $minor_prior=""; my $prefix=""; my $error_prior="";
 my $provide_AIMs=""; my $provide_counts=""; my $parental_counts_status=0; my $save_files=0;
 while (my $line=<CONFIG>){
 
@@ -42,6 +42,10 @@ while (my $line=<CONFIG>){
 	$initial_admix=$elements[1]; chomp $initial_admix;
 	if(length($initial_admix)==0){$initial_admix=0;} else{print "prior time of initial admixture is $initial_admix\n";}
     }#define prior admixture expectation
+    if($line=~ /per_site_error/g){
+	$error_prior=$elements[1]; chomp $error_prior;
+	if(length($error_prior)==0){$error_prior=0;}
+    }#define the expected error parameter for the HMM
     if($line=~ /focal_chrom_list/g){
 	$focal_chrom=$elements[1]; chomp $focal_chrom;
 	if(length($focal_chrom)==0){$focal_chrom=0;}
@@ -225,8 +229,8 @@ my $final_file1="ancestry-probs-par1_transposed"."$tag".".tsv"; my $final_file2=
     print HMMSCRIPT "$job3_submit\n";
     print HMMSCRIPT "cat $hyb_string > HMM.hybrid.files.list\n";
     print HMMSCRIPT "cat $par_string >HMM.parental.files.list\n";
-    print HMMSCRIPT "perl combine_all_individuals_hmm_v5.pl HMM.parental.files.list HMM.hybrid.files.list $minor_prior $parental_counts_status $initial_admix $focal_chrom $read_length\n";
-print "perl combine_all_individuals_hmm_v5.pl HMM.parental.files.list HMM.hybrid.files.list $minor_prior $parental_counts_status $initial_admix $focal_chrom $read_length\n";
+    print HMMSCRIPT "perl combine_all_individuals_hmm_v5.pl HMM.parental.files.list HMM.hybrid.files.list $minor_prior $parental_counts_status $initial_admix $focal_chrom $read_length $error_prior\n";
+print "perl combine_all_individuals_hmm_v5.pl HMM.parental.files.list HMM.hybrid.files.list $minor_prior $parental_counts_status $initial_admix $focal_chrom $read_length $error_prior\n";
     print HMMSCRIPT "perl convert_rchmm_to_ancestry_tsv_v3.pl current.samples.list current.samples.read.list $save_files $focal_chrom\n";
     print HMMSCRIPT "perl transpose_tsv.pl $final_file1\n";
     print HMMSCRIPT "perl transpose_tsv.pl $final_file2\n";
