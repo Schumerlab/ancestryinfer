@@ -93,7 +93,9 @@ while(my $line=<IN>){
 
     }
 
-#!    system("rm $focal_file"); 
+    if($save_files==0){
+    system("rm $focal_file"); 
+    }#remove individual posterior probs files
 
 }#for all individuals run through the HMM
 
@@ -109,7 +111,8 @@ system("rm map_batch*.sh samtools_batch*.sh split_jobs_list sam_files_mapped_to_
 
 system("rm HMM.parental.files.list*");
 system("rm HMM.hybrid.files.list*");
-my $prefix="$original_names".".";
-system("rm $prefix*");
+#my $prefix="$original_names".".";
+#system("rm $prefix*");
+system("rm current.samples.list");
 
 }#remove files, don't save

@@ -4,7 +4,7 @@ my $config=shift(@ARGV); chomp $config;
 open CONFIG, $config or die "cannot open configuration file\n";
 
 my $genome1=""; my $genome2=""; my $read_type=""; my $read_list=""; my $read_length=""; my $number_indiv_per_job=""; my $initial_admix=0; my $focal_chrom=0;
-my $num_jobs=""; my $job1_submit=""; my $job2_submit=""; my $job3_submit=""; my $minor_prior=""; my $prefix=""; my $error_prior="";
+my $num_jobs=""; my $job1_submit=""; my $job2_submit=""; my $job3_submit=""; my $minor_prior=""; my $prefix=""; my $error_prior=""; my $max_align="";
 my $provide_AIMs=""; my $provide_counts=""; my $parental_counts_status=0; my $save_files=0;
 while (my $line=<CONFIG>){
 
@@ -46,6 +46,10 @@ while (my $line=<CONFIG>){
 	$error_prior=$elements[1]; chomp $error_prior;
 	if(length($error_prior)==0){$error_prior=0;}
     }#define the expected error parameter for the HMM
+    if($line=~ /max_alignments/g){
+	$max_align=$elements[1]; chomp $max_align;
+	if(length($max_align)==0){$max_align=0;}
+    }#set the number of alignments to retain in the sam file
     if($line=~ /focal_chrom_list/g){
 	$focal_chrom=$elements[1]; chomp $focal_chrom;
 	if(length($focal_chrom)==0){$focal_chrom=0;}
@@ -195,7 +199,7 @@ my $hyb_string=""; my $par_string="";
 	my $samscript="samtools_batch"."$m".".sh";
 	open VARSCRIPT, ">$samscript";
 	print VARSCRIPT "$job2_submit\n";
-	print VARSCRIPT "perl run_samtools_to_hmm_v6.pl $current_job $genome1 $genome2 $read_length $save_files\n";
+	print VARSCRIPT "perl run_samtools_to_hmm_v6.pl $current_job $genome1 $genome2 $read_length $save_files $max_align\n";
 
 	my $map_depend=$slurm_ids_map[$m];
 

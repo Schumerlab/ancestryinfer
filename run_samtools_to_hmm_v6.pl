@@ -18,6 +18,8 @@ my $read_length=shift(@ARGV); chomp $read_length;
 
 my $save_files=shift(@ARGV); chomp $save_files;
 
+my $max_align=shift(@ARGV); chomp $max_align;
+
 open OUT, ">$infile1"."_bamlist";
 my $outfile="$infile1"."_bamlist";
 
@@ -117,17 +119,22 @@ while (my $id = <IN>){
     my $finalbam2="$unique2";
     $finalbam2=~s/sorted.unique/sorted.pass.unique/g;
 
+    ###Adding max read filter here
+    if($max_align > 0){
+    print "limiting to $max_align alignments\n";
+    my $tmp_list="$pass_both".".tmp";
+    system("shuf -n $max_align $pass_both > $tmp_list");
+    system("mv $tmp_list $pass_both");
+    }#then subsample, otherwise leave pass list as is
+    
     system("bamutils filter $unique1 $finalbam1 -whitelist $pass_both");
     system("bamutils filter $unique2 $finalbam2 -whitelist $pass_both");
-
+   
 
 #####VARIANT CALLING
     my $mpileup1 = "$unique1".".bcf";
-    if(! -f $mpileup1){
-    system("samtools mpileup -go $mpileup1 -f $genome1 $finalbam1");
-    } else{
-	print "$mpileup1 exists, not overwriting\n";
-    }#only write if does not exist 
+   
+    system("bcftools mpileup -o $mpileup1 -f $genome1 $finalbam1");
 
     my $vcf1 = "$unique1".".vcf.gz";
 
@@ -139,17 +146,11 @@ while (my $id = <IN>){
 
     system("perl vcf_to_counts_non-colinear.pl $vcf1 $aims");
 
-    my $mpileup2 = "$unique2".".bcf";
-
     my $counts1="$vcf1"."_counts";
 
     my $hmmsites1="$counts1".".hmm";
 
-    if(! -f $hmmsites1){
     system("perl overlap_AIMs_and_counts_v5.pl $aims $counts1");
-    } else{
-	print "$hmmsites1 file exists, not overwriting\n";
-    }
 
     my $hmm="$line1".".hmm.combined";
     $hmm =~ s/par1\.//g;
@@ -167,9 +168,10 @@ while (my $id = <IN>){
 
 ##cleanup intermediate files
     if($save_files==0){
-    system("rm $line1 $line2 $bam1 $bam2 $sorted1 $sorted2 $unique1 $unique2 $par1_pass $par2_pass $finalbam1 $finalbam2 $mpileup1 $mpileup2 $vcf1 $vcf2 $counts1 $count2 *.bai *_passlist *_passlist_both *unique.bam.vcf.aims");
+	my $bai1="$sorted1".".bai"; my $bai2="$sorted2".".bai"; my $aimsvcf1="$vcf1".".aims"; $mod1="$vcf1".".mod"; 
+    system("rm $line1 $line2 $bam1 $bam2 $sorted1 $sorted2 $unique1 $unique2 $par1_pass $par2_pass $finalbam1 $finalbam2 $mpileup1 $vcf1 $counts1 $pass_both $bai1 $bai2 $aimsvcf1 $mod1");
     }#don't save files
-}
+}#done
 
 open LISTPAR, ">HMM.parental.files.list."."$infile1";
 open LISTHYB, ">HMM.hybrid.files.list"."$infile1";

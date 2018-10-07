@@ -3,6 +3,7 @@
 perl Ancestry_HMM_parallel_v3.pl hmm_configuration_file.cfg
 
 ###set parameters in configuration file:
+###See below for details on each parameter
 
 hmm_configuration_file.cfg
 
@@ -15,10 +16,16 @@ hmm_configuration_file.cfg
 
 genome1.fa
 
+###The coordinates from genome1 are used as the coordinates in the HMM so this should be the better assembled genome if there are substantial differences in reference quality.
+
 ###the full path is also needed in the reads list, and that list needs to be in the directory where the analysis is being run 
 
 ###WARNING:
 if you provide an AIMs file and parental count file in the configuration file, these files must be in the same order and contain exactly the same sites. Coordinates given in these files must match the provided genomes. See swordtail examples for file format.
+
+The AIMs file *must* be provided if the genomes are non-colinear. Otherwise the program will define them using the provided fasta files.
+
+NOTE: The genome1 fasta file cannot contain _ in the chromosome names, this will be fixed in subsequent version. For now these can be replaced with - using i.e.: perl -pi -e 's/_/-/g' genome1.fa
 
 ###############
 ###DEPENDENCIES:
@@ -54,3 +61,53 @@ ERROR: must provide input file
 -i [path/to/input_file]
 
 #it is installed properly
+
+####################
+###Parameter details
+####################
+
+#full path to the parental genomes
+genome1=
+genome2=
+
+#read type, options are SE or PE
+read_type=
+
+#list containing full path to the reads, with PE reads tab separated on the same line
+read_list=
+
+#read length
+read_length=
+
+#proportion of the genome expected to be derived from the parent 1 species
+prop_genome_genome1_parent=
+
+#number of individuals to run in each job
+number_indiv_per_job=
+
+#Aims file listing the chromosome, position, parent 1 base, and parent 2 base,  see swordtail examples for format
+provide_AIMs=
+
+#Custom counts and recombination rate file. Format is chromosome, position, counts allele 1 in parent species 1, counts allele 2 in parent species 1, counts allele 1 in parent species 2, counts allele 2 in parent species 2, recombination rate in Morgans from previous marker
+#if blank assumes fixed markers and a uniform recombination rate of 2e-08 Morgans per basepair
+provide_counts=
+
+#per base error parameter for HMM, if blank assumes zero
+per_site_error=
+
+#expected generations since initial admixture, if blank HMM estimates
+gen_initial_admix=
+
+#list of chromosomes to run the HMM on, can be useful for big genomes/sample sizes. List with one chromosome name per line
+focal_chrom_list=
+
+#maximum number of alignments to use. This is useful for pipeline spead/memory if there are some samples with lots of reads. If blank all reads are used
+max_alignments=
+
+#keep intermediate files, 0=no, 1=yes
+retain_intermediate_files=
+
+#slurm commands for each job
+slurm_command_map=
+slurm_command_variant_call=
+slurm_command_hmm=

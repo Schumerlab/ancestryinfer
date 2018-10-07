@@ -22,14 +22,10 @@ while(my $line1 =<IN1>){
     my $sam1 = "$line1".".par1.sam";
     my $sam2 = "$line1".".par2.sam";
 
-    if((! -f $sam1) or (! -f $sam2)){
     my $RG1="'"."\@RG"."\\t"."ID:hyb"."\\t"."SM:tn5"."\\t"."PL:illumina"."\\t"."LB:hyblib1"."\\t"."PU:LSIslowmode"."'";
 	#print "$RG1\n";
     system("bwa mem -M -R $RG1 $genome1 -t 3 $line1 > $sam1");
     system("bwa mem -M -R $RG1 $genome2 -t 3 $line1 > $sam2");
-    } else{
-	print "$sam1 and $sam2 exist, not overwriting\n";
-    }
 
     print OUT1 "$sam1\n";
     print OUT2 "$sam2\n";
@@ -45,14 +41,10 @@ while(my $line1 =<IN1>){
         my $sam1 = "$read1".".par1.sam";
 	my $sam2 = "$read1".".par2.sam";
 
-     if((! -f $sam1) or (! -f $sam2)){
      my $RG1="'"."\@RG"."\\t"."ID:xiphohyb"."\\t"."SM:tn5"."\\t"."PL:illumina"."\\t"."LB:hyblib1"."\\t"."PU:LSIslowmode"."'";
        print "$RG1\n";
        system("bwa mem -M -R $RG1 $genome1 -t 3 $read1 $read2 > $sam1");
        system("bwa mem -M -R $RG1 $genome2 -t 3 $read1 $read2 > $sam2");
-    } else{
-       print "$sam1 and $sam2 exist, not overwriting\n";
-    }
 
     print OUT1 "$sam1\n";
     print OUT2 "$sam2\n";
