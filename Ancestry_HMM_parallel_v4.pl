@@ -238,4 +238,8 @@ print "perl combine_all_individuals_hmm_v5.pl HMM.parental.files.list HMM.hybrid
     print HMMSCRIPT "perl convert_rchmm_to_ancestry_tsv_v3.pl current.samples.list current.samples.read.list $save_files $focal_chrom\n";
     print HMMSCRIPT "perl transpose_tsv.pl $final_file1\n";
     print HMMSCRIPT "perl transpose_tsv.pl $final_file2\n";
+
+    my $list_prefix="$read_list".".*";
+    print HMMSCRIPT "rm $list_prefix\n";
+
     system("sbatch --dependency=afterok:$slurm_sam_string hmm_batch.sh");
