@@ -1,10 +1,8 @@
 #perl! -w
 
 my $list=shift(@ARGV); chomp $list;
-open IN, $list or die "cannot open list of results\n";
 
 my $original_names=shift(@ARGV); chomp $original_names;
-open NAMES, $original_names or die "cannot open list of file names\n";
 
 my $save_files=shift(@ARGV); chomp $save_files;
 
@@ -21,6 +19,12 @@ while(my $chrnames=<TAGCHR>){
 }#add name of focal chroms
 #else{ $tag="$tag"."_"."allchrs";}
 print "file tag is $tag\n";
+
+$list="$list"."$tag";
+open IN, $list or die "cannot open $list list of results\n";
+
+$original_names="$original_names"."$tag";
+open NAMES, $original_names or die "cannot open $original_names list of file names\n";
 
 my @filenames=();
 while(my $n=<NAMES>){
@@ -54,7 +58,8 @@ while(my $line=<IN>){
     my $currname="";
     for my $k (0..scalar(@filenames)-1){ 
 	my $focalmatch=$filenames[$k]; chomp $focalmatch;
-
+	$focalmatch =~ s/$tag//g;
+        #print "$focalmatch\n";
 	if($focal_file =~ /$focalmatch/g){
 	    print "matching names: $focalmatch\t$focal_file\n";
 	    $currname=$focalmatch;
@@ -109,10 +114,7 @@ system("rm $par2_string");
 system("rm map_batch*.sh samtools_batch*.sh split_jobs_list sam_files_mapped_to_parent1 sam_files_mapped_to_parent2 hmm_batch.sh");
 #print "$par1_string\n";
 
-system("rm HMM.parental.files.list*");
-system("rm HMM.hybrid.files.list*");
-#my $prefix="$original_names".".";
-#system("rm $prefix*");
-system("rm current.samples.list");
+system("rm HMM.parental.files.list*"."$tag");
+system("rm HMM.hybrid.files.list*"."$tag");
 
 }#remove files, don't save

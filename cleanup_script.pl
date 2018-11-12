@@ -15,8 +15,8 @@ while(my $line=<IN>){
     $file1=$elements[0]; chomp $file1;
     $file2=$elements[1]; chomp $file2;
 
-    my $cleanup1="$file1".".par1.sam*";
-    my $cleanup2="$file1".".par2.sam*";
+    my $cleanup1="$file1"."*.par1.sam*";
+    my $cleanup2="$file1"."*.par2.sam*";
     #print "$cleanup1\n$cleanup2\n";
 
     system("rm $cleanup1 $cleanup2");

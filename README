@@ -1,6 +1,6 @@
 ###usage
 
-perl Ancestry_HMM_parallel_v4.pl hmm_configuration_file.cfg
+perl Ancestry_HMM_parallel_v5.pl hmm_configuration_file.cfg
 
 ###set parameters in configuration file:
 ###See below for details on each parameter
@@ -16,6 +16,8 @@ hmm_configuration_file.cfg
 
 genome1.fa
 
+###All files must be unzipped
+
 ###The coordinates from genome1 are used as the coordinates in the HMM so this should be the better assembled genome if there are substantial differences in reference quality.
 
 ###the full path is also needed in the reads list, and that list needs to be in the directory where the analysis is being run 
@@ -25,7 +27,8 @@ if you provide an AIMs file and parental count file in the configuration file, t
 
 The AIMs file *must* be provided if the genomes are non-colinear. Otherwise the program will define them using the provided fasta files.
 
-NOTE: The genome1 fasta file cannot contain _ in the chromosome names, this will be fixed in subsequent version. For now these can be replaced with - using i.e.: perl -pi -e 's/_/-/g' genome1.fa
+NOTE: The genome1 fasta file cannot contain _ in the chromosome names. These can be replaced with - using i.e.: perl -pi -e 's/_/-/g' genome1.fa
+The genome1 fasta file cannot contain certain symbols that are incompatible with samtools/bcftools, including = and ; 
 
 ###############
 ###DEPENDENCIES:
@@ -89,7 +92,7 @@ number_indiv_per_job=
 provide_AIMs=
 
 #Custom counts and recombination rate file. Format is chromosome, position, counts allele 1 in parent species 1, counts allele 2 in parent species 1, counts allele 1 in parent species 2, counts allele 2 in parent species 2, recombination rate in Morgans from previous marker
-#if blank assumes fixed markers and a uniform recombination rate of 2e-08 Morgans per basepair
+#if blank assumes fixed markers and a uniform recombination rate
 provide_counts=
 
 #per base error parameter for HMM, if blank assumes zero
@@ -97,6 +100,9 @@ per_site_error=
 
 #expected generations since initial admixture, if blank HMM estimates
 gen_initial_admix=
+
+#per basepair recombination rate in morgans, for swordtails: 0.00000002
+rec_M_per_bp=
 
 #list of chromosomes to run the HMM on, can be useful for big genomes/sample sizes. List with one chromosome name per line
 focal_chrom_list=
