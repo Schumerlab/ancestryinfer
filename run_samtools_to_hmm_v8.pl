@@ -115,6 +115,9 @@ while (my $id = <IN>){
     my $par1_pass="$unique1"."_par1_passlist";
     my $par2_pass="$unique2"."_par2_passlist";
 
+    $par1_pass=~ s/\//_/g;
+    $par2_pass=~ s/\//_/g;
+
     $par1_pass=~ s/_read_1.fastq.gz.par1.sam.sorted.unique.bam//g;
     $par2_pass=~ s/_read_1.fastq.gz.par2.sam.sorted.unique.bam//g;
 
@@ -154,6 +157,9 @@ while (my $id = <IN>){
    
     system("samtools index $finalbam1");
     system("samtools index $finalbam2");
+
+    system("rm $par1_pass $par2_pass $pass_both");
+
 #####VARIANT CALLING
     my $mpileup1 = "$unique1".".bcf";
 
@@ -197,7 +203,7 @@ while (my $id = <IN>){
 ##cleanup intermediate files
     if($save_files==0){
 	my $bai1="$sorted1".".bai"; my $bai2="$sorted2".".bai"; my $aimsvcf1="$vcf1".".aims"; $mod1="$vcf1".".mod"; 
-    system("rm $line1 $line2 $bam1 $bam2 $sorted1 $sorted2 $unique1 $unique2 $par1_pass $par2_pass $finalbam1 $finalbam2 $mpileup1 $vcf1 $counts1 $pass_both $bai1 $bai2 $aimsvcf1 $mod1");
+    system("rm $line1 $line2 $bam1 $bam2 $sorted1 $sorted2 $unique1 $unique2 $finalbam1 $finalbam2 $mpileup1 $vcf1 $counts1 $bai1 $bai2 $aimsvcf1 $mod1");
     }#don't save files
 }#done
 

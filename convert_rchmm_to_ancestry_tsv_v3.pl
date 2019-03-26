@@ -69,11 +69,11 @@ while(my $line=<IN>){
 
     if($counter==1){
 	
-    my $temp_par1="$focal_file".".par1.temp";
+    my $temp_par1="$focal_file".".par1.results";
     system("echo '\t$currname' > $temp_par1");
     system("cut -f 1-2,3 $focal_file | tail -n +2 >> $temp_par1");
 
-    my $temp_par2="$focal_file".".par2.temp";
+    my $temp_par2="$focal_file".".par2.results";
     system("echo '\t$currname' > $temp_par2");
     system("cut -f 1-2,5 $focal_file | tail -n +2 >> $temp_par2");
 
@@ -85,11 +85,11 @@ while(my $line=<IN>){
 
     }#generate header information
     else{
-    my $temp_par1="$focal_file".".par1.temp";
+    my $temp_par1="$focal_file".".par1.results";
     system("echo '$currname' > $temp_par1");
     system("cut -f 3 $focal_file | tail -n +2 >> $temp_par1"); 
     
-    my $temp_par2="$focal_file".".par2.temp";
+    my $temp_par2="$focal_file".".par2.results";
     system("echo '$currname' > $temp_par2");
     system("cut -f 5 $focal_file | tail -n +2 >> $temp_par2");
 
@@ -111,10 +111,11 @@ system("paste $par2_string > $file2name");
 if($save_files==0){
 system("rm $par1_string");
 system("rm $par2_string");
-system("rm map_batch*.sh samtools_batch*.sh split_jobs_list sam_files_mapped_to_parent1 sam_files_mapped_to_parent2 hmm_batch.sh");
+system("rm map_batch*.sh samtools_batch*.sh split_jobs_list sam_files_mapped_to_parent1 sam_files_mapped_to_parent2 hmm_batch.sh *pass.formatted.posterior");
 #print "$par1_string\n";
 
-system("rm HMM.parental.files.list*"."$tag");
-system("rm HMM.hybrid.files.list*"."$tag");
+system("rm HMM.parental.files.list*");
+system("rm HMM.hybrid.files.list*");
+system("rm *.posterior.par1.results *.posterior.par2.results");
 
 }#remove files, don't save

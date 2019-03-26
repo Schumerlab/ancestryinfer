@@ -126,17 +126,10 @@ $aims=~ s/\.\///g;
 $aims=~ s/\//_/g;
 
 if(length($provide_AIMs)==0){
-
-if((! -f $aims) or (! -f "current_aims_file")){
     system("perl identify_AIMs_two_genomes.pl $genome1 $genome2 > $aims");
     open AIMSFILE, ">current_aims_file";
     print AIMSFILE "$aims\n";
 }#if aims file and key do not exist, write them
-else{
-print "aims files $aims and current_aims_file exist, not overwriting\n"
-}#warn about the re-use of these files
-
-}#no aims are provided, generate
 elsif(-f $provide_AIMs){
 
     system("cp $provide_AIMs $aims");
@@ -244,4 +237,5 @@ my $final_file1="ancestry-probs-par1_transposed"."$tag".".tsv"; my $final_file2=
     print HMMSCRIPT "perl convert_rchmm_to_ancestry_tsv_v3.pl current.samples.list current.samples.read.list $save_files $focal_chrom\n";
     print HMMSCRIPT "perl transpose_tsv.pl $final_file1\n";
     print HMMSCRIPT "perl transpose_tsv.pl $final_file2\n";
+    print HMMSCRIPT "rm $read_list".".*"." split_jobs_list\n"; #cleanup split read lists
     system("sbatch --dependency=afterok:$slurm_sam_string hmm_batch.sh");
