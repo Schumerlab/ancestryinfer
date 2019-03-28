@@ -111,11 +111,12 @@ system("paste $par2_string > $file2name");
 if($save_files==0){
 system("rm $par1_string");
 system("rm $par2_string");
-system("rm map_batch*.sh samtools_batch*.sh split_jobs_list sam_files_mapped_to_parent1 sam_files_mapped_to_parent2 hmm_batch.sh *pass.formatted.posterior");
+system("rm map_batch*.sh samtools_batch*.sh split_jobs_list sam_files_mapped_to_parent1 sam_files_mapped_to_parent2 hmm_batch.sh");
 #print "$par1_string\n";
 
-system("rm HMM.parental.files.list*");
-system("rm HMM.hybrid.files.list*");
-system("rm *.posterior.par1.results *.posterior.par2.results");
+#!system("rm *pass.formatted.posterior");
+#!system("rm HMM.parental.files.list*");
+#!system("rm HMM.hybrid.files.list*");
+#!system("rm *.posterior.par1.results *.posterior.par2.results");
 
 }#remove files, don't save
