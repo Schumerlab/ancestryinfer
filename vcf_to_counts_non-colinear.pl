@@ -4,6 +4,8 @@ my $infile=shift(@ARGV); chomp $infile;
 
 my $aims_list=shift(@ARGV); chomp $aims_list;
 
+my $path=shift(@ARGV); chomp $path;
+
 my $outfile="$infile"."_counts";
 open OUT, ">$outfile";
 
@@ -13,7 +15,7 @@ my $infile_aims="$infile".".aims";
 
 my $vcf_mod="$infile".".mod";
 system("cat $infile | perl -p -e 's/_/\t/g' | awk -v OFS=\'\\t\' \'\$1=\$1\"\_\"\$2\' > $vcf_mod");
-system("perl combine_FAS_scriptome_snippet.pl $aims_bed $vcf_mod $infile_aims");
+system("perl $path/combine_FAS_scriptome_snippet.pl $aims_bed $vcf_mod $infile_aims");
 open IN, $infile_aims or die "cannot open modified mpileup"; 
 
 my $compound=""; my $group=""; my $pos=""; my $reads1=0; my $reads2=0; my $ref=""; my $alt=""; my $match="";

@@ -4,7 +4,7 @@ my $config=shift(@ARGV); chomp $config;
 open CONFIG, $config or die "cannot open configuration file\n";
 
 my $genome1=""; my $genome2=""; my $read_type=""; my $read_list=""; my $read_length=""; my $number_indiv_per_job=""; my $initial_admix=0; my $focal_chrom=0;
-my $num_jobs=""; my $job1_submit=""; my $job2_submit=""; my $job3_submit=""; my $minor_prior=""; my $prefix=""; my $error_prior=""; my $max_align=""; my $rec_M_per_bp="";
+my $num_jobs=""; my $job1_submit=""; my $job2_submit=""; my $job3_submit=""; my $minor_prior=""; my $prefix=""; my $error_prior=""; my $max_align=""; my $rec_M_per_bp=0.00000003; my $path="";
 my $provide_AIMs=""; my $provide_counts=""; my $parental_counts_status=0; my $save_files=0;
 while (my $line=<CONFIG>){
 
@@ -19,6 +19,9 @@ while (my $line=<CONFIG>){
 	$genome2=$elements[1]; chomp $genome2;
 	print "parent genome 2 is $genome2\n";
     }#define genome2
+    if($line =~ /program_path=/g){
+	$path=$elements[1]; chomp $path;
+    }#path
     if($line =~ /read_type/g){
 	$read_type=$elements[1]; chomp $read_type;
 	if(($read_type ne 'SE') && ($read_type ne 'PE')){
@@ -99,6 +102,7 @@ while (my $line=<CONFIG>){
 }#read in the configuration file
 
 ####check if files exist
+if(length($path) < 1){die "Please set a path to the Ancestry_HMM_pipeline folder in the configuration file\n";} #path check 
 if(! -f $genome1){
     die "cannot find file $genome1\n";
 }#genome2
@@ -126,7 +130,7 @@ $aims=~ s/\.\///g;
 $aims=~ s/\//_/g;
 
 if(length($provide_AIMs)==0){
-    system("perl identify_AIMs_two_genomes.pl $genome1 $genome2 > $aims");
+    system("perl $path/identify_AIMs_two_genomes.pl $genome1 $genome2 > $aims");
     open AIMSFILE, ">current_aims_file";
     print AIMSFILE "$aims\n";
 }#if aims file and key do not exist, write them
@@ -180,7 +184,7 @@ my $hyb_string=""; my $par_string="";
     my $mapscript="map_batch"."$j".".sh";
     open MAPSCRIPT, ">$mapscript";
     print MAPSCRIPT "$job1_submit\n";
-    print MAPSCRIPT "perl run_map_v3.pl $current_job $genome1 $genome2 $read_type $tag\n";
+    print MAPSCRIPT "perl $path/run_map_v3.pl $current_job $genome1 $genome2 $read_type $tag\n";
     
     my $id_temp=qx(sbatch $mapscript); chomp $id_temp;
     my @idarray=split(/\n/,$id_temp);
@@ -207,7 +211,7 @@ my $hyb_string=""; my $par_string="";
 	my $samscript="samtools_batch"."$m".".sh";
 	open VARSCRIPT, ">$samscript";
 	print VARSCRIPT "$job2_submit\n";
-	print VARSCRIPT "perl run_samtools_to_hmm_v8.pl $current_job $genome1 $genome2 $read_length $save_files $max_align $focal_chrom $rec_M_per_bp\n";
+	print VARSCRIPT "perl $path/run_samtools_to_hmm_v8.pl $current_job $genome1 $genome2 $read_length $save_files $max_align $focal_chrom $rec_M_per_bp $path\n";
 
 	my $map_depend=$slurm_ids_map[$m];
 
@@ -232,10 +236,10 @@ my $final_file1="ancestry-probs-par1_transposed"."$tag".".tsv"; my $final_file2=
     print HMMSCRIPT "$job3_submit\n";
     print HMMSCRIPT "cat $hyb_string > HMM.hybrid.files.list"."$tag"."\n";
     print HMMSCRIPT "cat $par_string >HMM.parental.files.list"."$tag"."\n";
-    print HMMSCRIPT "perl combine_all_individuals_hmm_v5.pl HMM.parental.files.list"."$tag HMM.hybrid.files.list"."$tag $minor_prior $parental_counts_status $initial_admix $focal_chrom $read_length $error_prior $tag\n";
+    print HMMSCRIPT "perl $path/combine_all_individuals_hmm_v5.pl HMM.parental.files.list"."$tag HMM.hybrid.files.list"."$tag $minor_prior $parental_counts_status $initial_admix $focal_chrom $read_length $error_prior $tag\n";
 #print "perl combine_all_individuals_hmm_v5.pl HMM.parental.files.list HMM.hybrid.files.list $minor_prior $parental_counts_status $initial_admix $focal_chrom $read_length $error_prior $tag\n";
-    print HMMSCRIPT "perl convert_rchmm_to_ancestry_tsv_v3.pl current.samples.list current.samples.read.list $save_files $focal_chrom\n";
-    print HMMSCRIPT "perl transpose_tsv.pl $final_file1\n";
-    print HMMSCRIPT "perl transpose_tsv.pl $final_file2\n";
+    print HMMSCRIPT "perl $path/convert_rchmm_to_ancestry_tsv_v3.pl current.samples.list current.samples.read.list $save_files $focal_chrom\n";
+    print HMMSCRIPT "perl $path/transpose_tsv.pl $final_file1\n";
+    print HMMSCRIPT "perl $path/transpose_tsv.pl $final_file2\n";
     print HMMSCRIPT "rm $read_list".".*"." split_jobs_list\n"; #cleanup split read lists
     system("sbatch --dependency=afterok:$slurm_sam_string hmm_batch.sh");

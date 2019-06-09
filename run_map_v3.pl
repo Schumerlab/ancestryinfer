@@ -1,7 +1,7 @@
 #perl! -w
 
 if(@ARGV<4){
-    print "perl run_map_v2.pl read1_list parent1_genome parent2_genome SE_or_PE\n";
+    print "perl run_map_v3.pl read1_list parent1_genome parent2_genome SE_or_PE\n";
 }
 
 my $infile1=shift(@ARGV); chomp $infile1;

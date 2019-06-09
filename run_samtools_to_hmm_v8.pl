@@ -1,8 +1,8 @@
 #perl! -w
 
-if(@ARGV<7){
+if(@ARGV<8){
 
-    print "perl run_samtools_to_hmm_v8.pl id_list genome1 genome2 read_length save_files max_align focal_chroms_file\n"; exit;
+    print "perl run_samtools_to_hmm_v8.pl id_list genome1 genome2 read_length save_files max_align focal_chroms_file rate program_path\n"; exit;
 
 }#usage
 
@@ -23,6 +23,8 @@ my $max_align=shift(@ARGV); chomp $max_align;
 my $focal_chroms=shift(@ARGV); chomp $focal_chroms;
 
 my $rate=shift(@ARGV); chomp $rate; 
+
+my $path=shift(@ARGV); chomp $path;
 
 my $chrom_string="";
 if($focal_chroms ne 0){
@@ -177,13 +179,13 @@ while (my $id = <IN>){
 
     $vcf1 = "$unique1".".vcf";
 
-    system("perl vcf_to_counts_non-colinear.pl $vcf1 $aims");
+    system("perl $path/vcf_to_counts_non-colinear.pl $vcf1 $aims $path");
 
     my $counts1="$vcf1"."_counts";
 
     my $hmmsites1="$counts1".".hmm";
 
-    system("perl overlap_AIMs_and_counts_v6.pl $aims $counts1 $rate");
+    system("perl $path/overlap_AIMs_and_counts_v6.pl $aims $counts1 $rate");
 
     my $hmm="$line1".".hmm.combined";
     $hmm =~ s/par1\.//g;
