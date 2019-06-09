@@ -27,7 +27,11 @@ system("rm HMM.parental.files.list.*");
 my $combined="HMM.hybrid.files.list"."$list"."*";
 system("rm $combined");
 
+system("rm *.sam.hmm.combined.pass.formatted.posterior*");
+
 my $mod_list="$list".".*";
+if(-e $mod_list){
 system("rm $mod_list");
+}
 
 system("rm map_batch*sh samtools_batch*sh");
