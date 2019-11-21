@@ -25,8 +25,8 @@ while(my $line1 =<IN1>){
 
     my $RG1="'"."\@RG"."\\t"."ID:hyb"."\\t"."SM:tn5"."\\t"."PL:illumina"."\\t"."LB:hyblib1"."\\t"."PU:LSIslowmode"."'";
 	#print "$RG1\n";
-    system("bwa mem -M -R $RG1 $genome1 -t 3 $line1 > $sam1");
-    system("bwa mem -M -R $RG1 $genome2 -t 3 $line1 > $sam2");
+    system("bwa mem -M -R $RG1 $genome1 $line1 > $sam1");
+    system("bwa mem -M -R $RG1 $genome2 $line1 > $sam2");
 
     print OUT1 "$sam1\n";
     print OUT2 "$sam2\n";
@@ -44,8 +44,8 @@ while(my $line1 =<IN1>){
 
      my $RG1="'"."\@RG"."\\t"."ID:hyb"."\\t"."SM:tn5"."\\t"."PL:illumina"."\\t"."LB:hyblib1"."\\t"."PU:LSIslowmode"."'";
        print "$RG1\n";
-       system("bwa mem -M -R $RG1 $genome1 -t 3 $read1 $read2 > $sam1");
-       system("bwa mem -M -R $RG1 $genome2 -t 3 $read1 $read2 > $sam2");
+       system("bwa mem -M -R $RG1 $genome1 $read1 $read2 > $sam1");
+       system("bwa mem -M -R $RG1 $genome2 $read1 $read2 > $sam2");
 
     print OUT1 "$sam1\n";
     print OUT2 "$sam2\n";

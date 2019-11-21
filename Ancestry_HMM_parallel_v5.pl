@@ -14,10 +14,24 @@ while (my $line=<CONFIG>){
     if($line =~ /genome1=/g){
 	$genome1=$elements[1]; chomp $genome1;
 	print "parent genome 1 is $genome1\n";
+
+	if($genome1 =~ /\.gz/g){
+	    print "unzipping $genome1\n";
+	    system("gunzip $genome1");
+	    $genome1 =~ s/\.gz//g;
+	}#unzip and rename
+
     }#define genome1
     if($line =~ /genome2=/g){
 	$genome2=$elements[1]; chomp $genome2;
 	print "parent genome 2 is $genome2\n";
+
+	if($genome2 =~ /\.gz/g){
+            print "unzipping $genome2\n";
+            system("gunzip $genome2");
+	    $genome2  =~ s/\.gz//g;
+        }#unzip and rename
+
     }#define genome2
     if($line =~ /program_path=/g){
 	$path=$elements[1]; chomp $path;
@@ -93,6 +107,13 @@ while (my $line=<CONFIG>){
     }#mapping command 
     if($line =~ /provide_AIMs/){
 	$provide_AIMs=$elements[1]; chomp $provide_AIMs;
+	
+	if($provide_AIMs =~ /\.gz/g){
+            print "unzipping $provide_AIMs\n";
+	    system("gunzip $provide_AIMs");
+	    $provide_AIMs =~ s/\.gz//g;
+	}#unzip and rename
+
     }#aims list if provided
     if($line =~ /provide_counts/){
         $provide_counts=$elements[1]; chomp $provide_counts;
@@ -101,6 +122,13 @@ while (my $line=<CONFIG>){
 	} else{
 	$parental_counts_status=0;
 	}#id variable
+
+	if($provide_counts =~ /\.gz/g){
+	    print "unzipping $provide_counts\n";
+            system("gunzip $provide_counts");
+            $provide_counts =~ s/\.gz//g;
+	}#unzip and rename
+
     }#aims list if provided 
 
 }#read in the configuration file
@@ -277,5 +305,5 @@ $rec_geno=~ s/-par1//g;
 if($job_submit eq 'sbatch'){
     system("sbatch --dependency=afterok:$slurm_sam_string hmm_batch.sh");
 } else{
-    system("bash hmm_batch.sh");
+#!    system("bash hmm_batch.sh");
 }#submit parallel or sequential  
