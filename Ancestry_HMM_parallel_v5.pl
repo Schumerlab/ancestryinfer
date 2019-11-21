@@ -3,8 +3,8 @@
 my $config=shift(@ARGV); chomp $config;
 open CONFIG, $config or die "cannot open configuration file\n";
 
-my $genome1=""; my $genome2=""; my $read_type=""; my $read_list=""; my $read_length=""; my $number_indiv_per_job=""; my $initial_admix=0; my $focal_chrom=0;
-my $num_jobs=""; my $job1_submit=""; my $job2_submit=""; my $job3_submit=""; my $minor_prior=""; my $prefix=""; my $error_prior=""; my $max_align=""; my $rec_M_per_bp=0.00000003; my $path="";
+my $genome1=""; my $genome2=""; my $read_type=""; my $read_list=""; my $read_length=""; my $number_indiv_per_job=""; my $initial_admix=0; my $focal_chrom=0; my $pp=0.9;
+my $num_jobs=""; my $job1_submit=""; my $job2_submit=""; my $job3_submit=""; my $minor_prior=""; my $prefix=""; my $error_prior=""; my $max_align=""; my $rec_M_per_bp=0.00000003; my $path=""; my $job_submit="";
 my $provide_AIMs=""; my $provide_counts=""; my $parental_counts_status=0; my $save_files=0;
 while (my $line=<CONFIG>){
 
@@ -60,6 +60,13 @@ while (my $line=<CONFIG>){
     if($line=~ /retain_intermediate_files/g){
 	$save_files=$elements[1]; chomp $save_files;
     }#define save files
+    if($line=~ /job_submit_command/g){
+	$job_submit=$elements[1]; chomp $job_submit;
+    }#define submit command as sbatch or bash
+    if($line=~ /posterior_thresh/g){
+	$pp=$elements[1]; chomp $pp;
+	if(length($pp) eq 0){$pp=0.9}
+    }#read in pp thresh for rec events
     if($line=~ /rec_M_per_bp/g){
 	$rec_M_per_bp=$elements[1]; chomp $rec_M_per_bp;
     }#set per bp recombination rate
@@ -67,10 +74,7 @@ while (my $line=<CONFIG>){
 	$number_indiv_per_job=$elements[1]; chomp $number_indiv_per_job;
        
 	print "task being split into $number_indiv_per_job per job\n";
-	$prefix="$read_list.";
-	system("rm $prefix*");
-	system("split -d -e -l $number_indiv_per_job $read_list $prefix"); 
-	system("ls $prefix* > split_jobs_list");
+
     }#batch parameters
     if($line =~ /slurm_command_map/g){
 	my @job1=split(/\#/,$line);
@@ -100,6 +104,16 @@ while (my $line=<CONFIG>){
     }#aims list if provided 
 
 }#read in the configuration file
+
+####generate job split
+if($job_submit eq 'sbatch'){
+    $prefix="$read_list.";
+    system("rm $prefix*"); #remove anything from past runs
+    system("split -d -e -l $number_indiv_per_job $read_list $prefix");
+    system("ls $prefix* > split_jobs_list");
+} else{
+    system("ls $read_list > split_jobs_list");
+}#split or don't
 
 ####check if files exist
 if(length($path) < 1){die "Please set a path to the Ancestry_HMM_pipeline folder in the configuration file\n";} #path check 
@@ -185,14 +199,21 @@ my $hyb_string=""; my $par_string="";
     open MAPSCRIPT, ">$mapscript";
     print MAPSCRIPT "$job1_submit\n";
     print MAPSCRIPT "perl $path/run_map_v3.pl $current_job $genome1 $genome2 $read_type $tag\n";
-    
+
+    if($job_submit eq 'sbatch'){
     my $id_temp=qx(sbatch $mapscript); chomp $id_temp;
     my @idarray=split(/\n/,$id_temp);
     $id=$idarray[0]; chomp $id;
     $id=~ s/\D//g;
     push(@slurm_ids_map,$id);
     print "submitting mapping batch id $id\n";
+    } else{
+	system("bash $mapscript");
+    }#submit parallel or sequential
+
     }#all mapping
+
+
 
     for my $m (0..scalar(@jobs)-1){
 	my $current_job=$jobs[$m];
@@ -213,8 +234,9 @@ my $hyb_string=""; my $par_string="";
 	print VARSCRIPT "$job2_submit\n";
 	print VARSCRIPT "perl $path/run_samtools_to_hmm_v8.pl $current_job $genome1 $genome2 $read_length $save_files $max_align $focal_chrom $rec_M_per_bp $path\n";
 
-	my $map_depend=$slurm_ids_map[$m];
+	my $map_depend=$slurm_ids_map[$m]; 
 
+	if($job_submit eq 'sbatch'){
 	my $id_temp=qx(sbatch --dependency=afterok:$map_depend $samscript); chomp $id_temp;
 	my @idarray=split(/\n/,$id_temp);
 	$id=$idarray[0]; chomp $id;
@@ -225,6 +247,9 @@ my $hyb_string=""; my $par_string="";
 	$slurm_sam_string="$slurm_sam_string".","."$id";
 	}
 	print "submitting variant batch id $id\n";
+	} else{
+	    system("bash $samscript");
+	}#submit parallel or sequential 
 
     }#all variants
 
@@ -242,4 +267,15 @@ my $final_file1="ancestry-probs-par1_transposed"."$tag".".tsv"; my $final_file2=
     print HMMSCRIPT "perl $path/transpose_tsv.pl $final_file1\n";
     print HMMSCRIPT "perl $path/transpose_tsv.pl $final_file2\n";
     print HMMSCRIPT "rm $read_list".".*"." split_jobs_list\n"; #cleanup split read lists
+
+$final_file1=~ s/_transposed//g; $final_file2=~ s/_transposed//g;
+$rec_geno="$final_file1"."_rec.txt";
+$rec_geno=~ s/-par1//g;
+    print HMMSCRIPT "perl $path/parsetsv_to_genotypes_v2.pl $final_file1 $final_file2 $pp $rec_geno\n";
+    print HMMSCRIPT "Rscript $path/identify_intervals_ancestryinfer.R $rec_geno $path\n";
+
+if($job_submit eq 'sbatch'){
     system("sbatch --dependency=afterok:$slurm_sam_string hmm_batch.sh");
+} else{
+    system("bash hmm_batch.sh");
+}#submit parallel or sequential  
