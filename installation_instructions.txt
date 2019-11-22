@@ -1,0 +1,181 @@
+#####################################
+###### INSTALL DEPENDENCIES FOR MIXNMATCH & ANCESTRYINFER
+#####################################
+
+### these instructions assume you are on some linux platform
+	### they have been tested on ubuntu 18.04, ubuntu 16.04, centos7, and macOS (note mac specific instructions for some steps below)
+
+#########################
+#######Miniconda install
+#########################
+
+### If you don't already have a miniconda installation, start with that
+### if you are not sure if you have a conda install, try "conda list", if you get output you have conda
+### all instructions assume you will do the installations in your home directory, ~
+# To download the latest version of miniconda3
+	
+	cd ~
+	wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh   
+
+	###on mac OS:
+	cd ~
+	wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
+
+	###if you are running on macs OS and haven't installed basic unix commands, make sure to install these as well:
+	brew install coreutils
+
+
+# Run the installer with the following commands and follow the on screen instructions.
+
+	chmod +x Miniconda3-latest-Linux-x86_64.sh
+	./Miniconda3-latest-Linux-x86_64.sh    
+
+	###on mac OS:
+	chmod +x Miniconda3-latest-MacOSX-x86_64.sh
+	./Miniconda3-latest-MacOSX-x86_64.sh  # follow the prompts to finish the miniconda install
+
+# Run this command to add the export line to your .bashrc file.
+
+	echo "export PATH=~/miniconda3/bin:$PATH" >> ~/.bashrc
+	
+# Source your .bashrc file with this command:
+
+	source ~/.bashrc
+
+# Check that the conda install worked by running this command:
+
+	conda list  # This should print out a list of packages.
+
+##################################
+#######install packages with conda
+##################################
+
+### If you have completed the above steps, or if you have already installed conda
+### note that if your conda install is not miniconda3, you may need to replace that in the commands below
+# Download and istall the libraries needed for Ancestry_HMM and SELAM:
+
+	conda install -c conda-forge armadillo
+	conda install -c conda-forge gsl
+
+#Download and istall the libraries needed for mixnmatch
+	conda install -c anaconda biopython
+	conda install -c bioconda perl-math-random 
+	conda install -c bioconda perl-math-round
+
+#Download and install the libraries needed for ancestryinfer
+
+	conda install -c bioconda bwa
+	conda install -c bioconda samtools 
+	conda install -c bioconda bcftools
+
+# Run this command to add the export LD_LIBRARY_PATH line to your .bashrc file.
+# this makes it possible to link the required libraries during runtime
+
+	echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/miniconda3/lib/" >> ~/.bashrc
+
+# Source your .bashrc file again:
+
+	source ~/.bashrc
+
+# you can test your build using 
+
+	gsl-config --libs  ### if it worked, should give you the location of your gsl instal plus links
+
+##################################
+#######install other dependencies
+##################################
+
+# download and build our repositories  
+# these include statements work as long as your miniconda installation is in your home directory. 
+
+	cd ~
+	git clone https://github.com/russcd/Ancestry_HMM.git
+	cd Ancestry_HMM/src/
+	g++ -O3 -o ancestry_hmm ancestry_hmm.cpp -larmadillo -L ~/miniconda3/lib/ -I ~/miniconda3/include/
+
+# now build SELAM
+
+	cd ~
+	git clone https://github.com/russcd/SELAM.git
+	cd SELAM/src/
+	g++ -std=c++0x -O3 SELAM.cpp -o SELAM -L ~/miniconda3/lib/ -I ~/miniconda3/include/ -lgsl -lgslcblas -lm
+
+### wgsim 
+	cd ~
+	git clone https://github.com/lh3/wgsim
+	cd wgsim/ 
+	gcc -g -O2 -Wall -o wgsim wgsim.c -lz -lm
+
+### now install seqtk
+	cd ~
+	git clone https://github.com/lh3/seqtk.git
+	cd seqtk/
+	gcc -g -Wall -O2 -Wno-unused-function seqtk.c -o seqtk -lz -lm
+
+### now bedtools2
+	cd ~
+	git clone https://github.com/arq5x/bedtools2.git
+	cd bedtools2/
+	make
+
+### macs installation requires boost
+	cd ~
+	conda install -c conda-forge boost
+	git clone https://github.com/gchen98/macs.git
+	cd macs/
+	g++ -Wall -g -I ~/miniconda3/include/ -c simulator.cpp
+	g++ -Wall -g -I ~/miniconda3/include/ -c algorithm.cpp
+	g++ -Wall -g -I ~/miniconda3/include/ -c datastructures.cpp
+	g++ -o macs simulator.o algorithm.o datastructures.o
+
+#### also install msformatter in that directory
+	g++ -Wall -g -c msformat.cpp
+	g++ -o msformatter msformat.o
+
+### fastahack
+	cd ~
+	git clone https://github.com/ekg/fastahack.git
+	cd fastahack/
+	make
+
+### ngsutil requires a python2 environment
+
+	cd ~
+	conda create --name=py2 python=2.7
+	conda activate py2
+	conda install -c bioconda ngsutils
+
+### need to add seq-gen as well
+
+	conda install -c bioconda seq-gen
+
+# now add the build directory to your path
+
+	echo "export PATH=$PATH:~/SELAM/src/:~/Ancestry_HMM/src/:~/fastahack/:~/macs/:~/bedtools2/bin/:~/seqtk/:~/wgsim/" >> ~/.bashrc
+	source ~/.bashrc
+
+# confirm the installations
+
+	ancestry_hmm                       ### should print a bunch of help instructions
+	SELAM -d SELAM/examples/example1/example1_demography.txt           ### will run for 10-20 seconds and print runtime
+	fastahack   						### prints a bunch of help
+	wgsim								### helpstatement
+	macs								### help statement
+	bedtools							### help statement
+	seqtk								### help statement
+
+# All done with dependencies! :)
+
+#########################################
+###### INSTALL MIXNMATCH & ANCESTRYINFER
+#########################################
+
+#Download mixnmatch and ancestryinfer:
+
+git clone https://github.com/Schumerlab/mixnmatch.git
+
+git clone https://github.com/Schumerlab/ancestryinfer.git
+
+#each time before running, refresh dependencies:
+	source ~/.bashrc
+	conda activate py2

@@ -1,3 +1,9 @@
+#############################
+##ancestryinfer quick-start
+#############################
+
+See the user manual pdf for more complete information
+
 ###usage
 
 perl Ancestry_HMM_parallel_v5.pl hmm_configuration_file.cfg
@@ -16,8 +22,6 @@ hmm_configuration_file.cfg
 
 genome1.fa
 
-###All files must be unzipped
-
 ###The coordinates from genome1 are used as the coordinates in the HMM so this should be the better assembled genome if there are substantial differences in reference quality.
 
 ###the full path is also needed in the reads list, and that list needs to be in the directory where the analysis is being run 
@@ -33,6 +37,9 @@ The genome1 fasta file cannot contain certain symbols that are incompatible with
 ###############
 ###DEPENDENCIES:
 ###############
+
+######INSTALL INSTRUCTIONS FOR DEPENDENCIES ARE DETAILED HERE:
+installation_instructions.txt
 
 ###depends on the following programs that most clusters will already have installed:
 ##bwa ~(v0.7.15)
@@ -52,18 +59,10 @@ bwa
 samtools
 bcftools
 bamutils
+ancestry_hmm
 
 #if all of these print the usage, then you are good to go!
 
-ancestry_hmm
-
-#for this command, it will not print usage, but if it prints: 
-
-reading command line
-ERROR: must provide input file
--i [path/to/input_file]
-
-#it is installed properly
 
 ####################
 ###Parameter details
@@ -91,6 +90,9 @@ prop_genome_genome1_parent=
 #number of individuals to run in each job
 number_indiv_per_job=
 
+#path to ancestryinfer install
+program_path=
+
 #Aims file listing the chromosome, position, parent 1 base, and parent 2 base,  see swordtail examples for format
 provide_AIMs=
 
@@ -113,10 +115,16 @@ focal_chrom_list=
 #maximum number of alignments to use. This is useful for pipeline spead/memory if there are some samples with lots of reads. If blank all reads are used
 max_alignments=
 
+#posterior probability threshold for inferring recombination events (0-1, 0.9 recommended)
+posterior_thresh=
+
+#job submit command, either bash or sbatch
+job_submit_command=
+
 #keep intermediate files, 0=no, 1=yes
 retain_intermediate_files=
 
-#slurm commands for each job
+#header commands for each job
 slurm_command_map=
 slurm_command_variant_call=
 slurm_command_hmm=
