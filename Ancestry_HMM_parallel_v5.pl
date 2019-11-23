@@ -294,7 +294,7 @@ my $final_file1="ancestry-probs-par1_transposed"."$tag".".tsv"; my $final_file2=
     print HMMSCRIPT "perl $path/convert_rchmm_to_ancestry_tsv_v3.pl current.samples.list current.samples.read.list $save_files $focal_chrom\n";
     print HMMSCRIPT "perl $path/transpose_tsv.pl $final_file1\n";
     print HMMSCRIPT "perl $path/transpose_tsv.pl $final_file2\n";
-    print HMMSCRIPT "rm $read_list".".*"." split_jobs_list\n"; #cleanup split read lists
+    print HMMSCRIPT "rm split_jobs_list\n"; #cleanup split read lists
 
 $final_file1=~ s/_transposed//g; $final_file2=~ s/_transposed//g;
 $rec_geno="$final_file1"."_rec.txt";
@@ -302,8 +302,11 @@ $rec_geno=~ s/-par1//g;
     print HMMSCRIPT "perl $path/parsetsv_to_genotypes_v2.pl $final_file1 $final_file2 $pp $rec_geno\n";
     print HMMSCRIPT "Rscript $path/identify_intervals_ancestryinfer.R $rec_geno $path\n";
 
+    print HMMSCRIPT "rm ancestry-probs_"."*",".tsv_rec.txt\nrm ancestry-probs_"."*".".tsv_rec.txt_header\nrm ancestry-probs_"."*".".tsv_rec.txt_transposed"."*"."\nrm ancestry-probs-par"."*"."_transposed_"."*"."\n"; #cleanup intermediate files         
+
+
 if($job_submit eq 'sbatch'){
     system("sbatch --dependency=afterok:$slurm_sam_string hmm_batch.sh");
 } else{
-#!    system("bash hmm_batch.sh");
+    system("bash hmm_batch.sh");
 }#submit parallel or sequential  

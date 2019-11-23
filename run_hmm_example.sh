@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=run_hmm
-#SBATCH --time=03:00:00
+#SBATCH --time=05:00:00
 #SBATCH --ntasks=1
 #SBATCH -p schumer
 #SBATCH --cpus-per-task=1
@@ -11,7 +11,7 @@ module load armadillo
 module load biology
 module load samtools
 module load bcftools
-module load py-pysam
+module load py-pysam/0.14.1_py27
 module load bwa
 export PATH="/home/groups/schumer/shared_bin/ngsutils/bin:$PATH"
 export PATH="/home/groups/schumer/shared_bin/Ancestry_HMM/src:$PATH"
