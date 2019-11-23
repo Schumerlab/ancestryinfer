@@ -91,7 +91,7 @@
 	cd ~
 	git clone https://github.com/russcd/Ancestry_HMM.git
 	cd Ancestry_HMM/src/
-	g++ -O3 -o ancestry_hmm ancestry_hmm.cpp -larmadillo -L ~/miniconda3/lib/ -I ~/miniconda3/include/
+	g++ -O3 -o ancestry_hmm ancestry_hmm.cpp -larmadillo -L ~/miniconda3/lib/ -I ~/miniconda3/include/ -rpath ~/miniconda3/lib/
 
 # now build SELAM
 
