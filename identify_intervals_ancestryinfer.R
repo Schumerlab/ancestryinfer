@@ -31,7 +31,7 @@ data<-read.csv(file=file,sep="\t",head=FALSE,as.is=T)
 intervals<-{}
 count=0
 
-for(y in 3:(length(data[1,])-1)){
+for(y in 3:(length(data[1,]))){
 
 focal_geno=data[,y]
 sites<-data[,2]

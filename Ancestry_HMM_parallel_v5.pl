@@ -305,7 +305,7 @@ $rec_geno=~ s/-par1//g;
     print HMMSCRIPT "perl $path/parsetsv_to_genotypes_v2.pl $final_file1 $final_file2 $pp $rec_geno\n";
     print HMMSCRIPT "Rscript $path/identify_intervals_ancestryinfer.R $rec_geno $path\n";
 
-    print HMMSCRIPT "rm ancestry-probs_"."*",".tsv_rec.txt\nrm ancestry-probs_"."*".".tsv_rec.txt_header\nrm ancestry-probs_"."*".".tsv_rec.txt_transposed"."*"."\nrm ancestry-probs-par"."*"."_transposed_"."*"."\n"; #cleanup intermediate files         
+    print HMMSCRIPT "rm ancestry-probs_"."*",".tsv_rec.txt\nrm ancestry-probs_"."*".".tsv_rec.txt_header\nrm ancestry-probs_"."*".".tsv_rec.txt_transposed"."*"."\n"; #cleanup intermediate files         
 
 
 if($job_submit eq 'sbatch'){
