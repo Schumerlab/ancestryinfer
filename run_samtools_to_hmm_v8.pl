@@ -211,8 +211,8 @@ while (my $id = <IN>){
 
 my $append=$chrom_string;
 $append=~ s/,/_/g;
-my $listparfile="HMM.parental.files.list."."$infile1"."_"."$append";
-my $listhybfile="HMM.hybrid.files.list"."$infile1"."_"."$append";
+my $listparfile="HMM.parental.files.list."."$infile1"."_"."$append"; $listparfile=~ s/\///g; $listparfile=~ s/\.\./\./g;
+my $listhybfile="HMM.hybrid.files.list."."$infile1"."_"."$append"; $listhybfile=~ s/\///g; $listhybfile=~ s/\.\./\./g;
 print "$listparfile\t$listhybfile\n";
 open LISTPAR, ">"."$listparfile";
 open LISTHYB, ">"."$listhybfile";

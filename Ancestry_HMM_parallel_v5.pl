@@ -246,8 +246,11 @@ my $hyb_string=""; my $par_string="";
     for my $m (0..scalar(@jobs)-1){
 	my $current_job=$jobs[$m];
 
-	my $hybfile="HMM.hybrid.files.list"."$current_job"."$tag"; $hybfile =~ s/\///g; $hybfile=~ s/\.\././g;
-	my $parfile="HMM.parental.files.list."."$current_job"."$tag"; $parfile =~ s/\///g; $parfile=~ s/\.\././g;
+	my $hybfile="HMM.hybrid.files.list."."$current_job"."$tag"; $hybfile=~ s/\///g; $hybfile =~ s/\.\./\./g;  
+	my $parfile="HMM.parental.files.list."."$current_job"."$tag"; $parfile=~ s/\///g; $parfile =~ s/\.\./\./g; 
+
+	print "$hybfile\t$parfile\n";
+
 	#save HMM file names for later
 	if($m==0){
 	    $hyb_string="$hybfile";
