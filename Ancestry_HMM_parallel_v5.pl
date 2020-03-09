@@ -5,7 +5,7 @@ open CONFIG, $config or die "cannot open configuration file\n";
 
 my $genome1=""; my $genome2=""; my $read_type=""; my $read_list=""; my $read_length=""; my $number_indiv_per_job=""; my $initial_admix=0; my $focal_chrom=0; my $pp=0.9;
 my $num_jobs=""; my $job1_submit=""; my $job2_submit=""; my $job3_submit=""; my $minor_prior=""; my $prefix=""; my $error_prior=""; my $max_align=""; my $rec_M_per_bp=0.00000003; my $path=""; my $job_submit="";
-my $provide_AIMs=""; my $provide_counts=""; my $parental_counts_status=0; my $save_files=0;
+my $provide_AIMs=""; my $provide_counts=""; my $parental_counts_status=0; my $save_files=0; my $quality=30;
 while (my $line=<CONFIG>){
 
     chomp $line;
@@ -47,6 +47,13 @@ while (my $line=<CONFIG>){
 	$read_length=$elements[1]; chomp $read_length;
 	print "expected read length is $read_length\n";
     }#save read length
+    if($line =~ /mapping_quality/g){
+	my $tmpquality=$elements[1]; chomp $tmpquality;
+	if(length($tmpquality)>0){
+	    $quality=$tmpquality;
+	}#reset quality
+	print "using mapping quality cutoff of $quality\n";
+    }#quality cutoff
     if($line =~ /read_list/g){
 	$read_list=$elements[1]; chomp $read_list;
 	print "read list is $read_list\n";
@@ -263,7 +270,7 @@ my $hyb_string=""; my $par_string="";
 	my $samscript="samtools_batch"."$m".".sh";
 	open VARSCRIPT, ">$samscript";
 	print VARSCRIPT "$job2_submit\n";
-	print VARSCRIPT "perl $path/run_samtools_to_hmm_v8.pl $current_job $genome1 $genome2 $read_length $save_files $max_align $focal_chrom $rec_M_per_bp $path\n";
+	print VARSCRIPT "perl $path/run_samtools_to_hmm_v8.pl $current_job $genome1 $genome2 $read_length $save_files $max_align $focal_chrom $rec_M_per_bp $path $quality\n";
 
 	my $map_depend=$slurm_ids_map[$m]; 
 

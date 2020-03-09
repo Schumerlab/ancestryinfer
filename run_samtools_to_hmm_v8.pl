@@ -1,8 +1,8 @@
 #perl! -w
 
-if(@ARGV<8){
+if(@ARGV<9){
 
-    print "perl run_samtools_to_hmm_v8.pl id_list genome1 genome2 read_length save_files max_align focal_chroms_file rate program_path\n"; exit;
+    print "perl run_samtools_to_hmm_v8.pl id_list genome1 genome2 read_length save_files max_align focal_chroms_file rate program_path quality\n"; exit;
 
 }#usage
 
@@ -25,6 +25,8 @@ my $focal_chroms=shift(@ARGV); chomp $focal_chroms;
 my $rate=shift(@ARGV); chomp $rate; 
 
 my $path=shift(@ARGV); chomp $path;
+
+my $quality=shift(@ARGV); chomp $quality;
 
 my $chrom_string="";
 if($focal_chroms ne 0){
@@ -83,7 +85,7 @@ while (my $id = <IN>){
     my $unique1 = "$sorted1".".unique.bam";
     $unique1 =~ s/sorted.bam.unique/sorted.unique/g;
 
-    system("samtools view -b -q 30 $sorted1 > $unique1"); # this is for mapped reads with poor mapping quality
+    system("samtools view -b -q $quality $sorted1 > $unique1"); # this is for mapped reads with poor mapping quality
 
     print OUT "$unique1\n";
 
@@ -109,7 +111,7 @@ while (my $id = <IN>){
     my $unique2 = "$sorted2".".unique.bam";
     $unique2 =~ s/sorted.bam.unique/sorted.unique/g;
 
-    system("samtools view -b -q 30 $sorted2 > $unique2"); # this is for mapped reads with poor mapping quality                  
+    system("samtools view -b -q $quality $sorted2 > $unique2"); # this is for mapped reads with poor mapping quality                  
 
     print OUT "$unique2\n";
 
