@@ -7,7 +7,7 @@ if(@ARGV<9){
 }#usage
 
 my $infile1=shift(@ARGV); chomp $infile1; my $trimmed="$infile1"."_trim";
-system("cut -f 1 $infile1 > $trimmed");
+system("cat $infile1 | perl -p -e 's/ +/\t/g' | cut -f 1 > $trimmed");
 open IN, $trimmed or die "cannot open indiv id list\n";
 
 my $genome1=shift(@ARGV); chomp $genome1;
@@ -59,7 +59,8 @@ my @parfilelist=();
 my @indivfilelist=();
 while (my $id = <IN>){
 
-    chomp $id; 
+    chomp $id;
+
     my $append="$chrom_string"; $append=~ s/,/_/g;
     print "file tag is $append";
     my $line1="$id"."_"."$append".".par1.sam";

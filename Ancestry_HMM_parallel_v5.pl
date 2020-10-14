@@ -57,6 +57,7 @@ while (my $line=<CONFIG>){
     if($line =~ /read_list/g){
 	$read_list=$elements[1]; chomp $read_list;
 	print "read list is $read_list\n";
+	system("perl -pi -e 's/ +/\t/g' $read_list");
     }#define read  list
     if($line=~ /prop_genome_genome1_parent/g){
 	$minor_prior=$elements[1]; chomp $minor_prior;
