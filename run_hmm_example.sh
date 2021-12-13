@@ -17,5 +17,5 @@ export PATH="/home/groups/schumer/shared_bin/ngsutils/bin:$PATH"
 export PATH="/home/groups/schumer/shared_bin/Ancestry_HMM/src:$PATH"
 export PYTHONPATH=/home/groups/schumer/shared_bin:$PYTHONPATH
 
-perl  /home/groups/schumer/shared_bin/Ancestry_HMM_pipeline/Ancestry_HMM_parallel_v5.pl hmm_configuration_file.cfg
+perl Ancestry_HMM_parallel_v6.pl hmm_configuration_file.cfg
 
