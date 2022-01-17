@@ -23,14 +23,16 @@ while(my $line=<IN>){
 }#for all lines
 
 system("rm HMM.parental.files.list.*");
-my $combined="HMM.hybrid.files.list"."$list"."*";
+my $combined="HMM.hybrid.files.list."."$list"."*";
 system("rm $combined");
 
 system("rm *.sam.hmm.combined.pass.formatted.posterior*");
 
 my $mod_list="$list".".*";
-if(-e $mod_list){
 system("rm $mod_list");
-}
+my $bam_list="$list"."_bamlist";
+my $trim="$list"."_trim";
+if(-e $bam_list){system("rm $bam_list");}
+if(-e $trim_list){system("rm $trim_list");}
 
 system("rm map_batch*sh samtools_batch*sh");
