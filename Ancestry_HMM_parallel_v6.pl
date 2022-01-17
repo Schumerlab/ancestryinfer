@@ -3,7 +3,7 @@
 my $config=shift(@ARGV); chomp $config;
 open CONFIG, $config or die "cannot open configuration file\n";
 
-my $genome1=""; my $genome2=""; my $genome3=""; my $read_type=""; my $read_list=""; my $read_length=""; my $number_indi_per_job=""; my $initial_admix=0; my $focal_chrom=0; my $pp=0.9;
+my $genome1=""; my $genome2=""; my $genome3=""; my $read_type=""; my $read_list=""; my $read_length=""; my $number_indi_per_job=""; my $initial_admix=0; my $initial_admix2=0; my $focal_chrom=0; my $pp=0.9;
 my $num_jobs=""; my $job1_submit=""; my $job2_submit=""; my $job3_submit=""; my $minor_prior1=""; my $minor_prior2=""; my $prefix=""; my $error_prior=""; my $max_align=""; my $rec_M_per_bp=0.00000003; my $path=""; my $job_submit="";
 my $provide_AIMs=""; my $provide_counts=""; my $parental_counts_status=0; my $save_files=0; my $quality=30;
 while (my $line=<CONFIG>){
@@ -77,10 +77,14 @@ while (my $line=<CONFIG>){
         $minor_prior2=$elements[1]; chomp $minor_prior2;
 	print "prior prominoion of the genome from parent 2 is $minor_prior2\n";
     }#define priors par2
-    if($line=~ /gen_initial_admix/g){
+    if(($line eq 'gen_initial_admix') or ($line=~ /gen_initial_admix_p1_p2/g)){
 	$initial_admix=$elements[1]; chomp $initial_admix;
-	if(length($initial_admix)==0){$initial_admix=0;} else{print "prior time of initial admixture is $initial_admix\n";}
-    }#define prior admixture expectation
+	if(length($initial_admix)==0){$initial_admix=0;} else{print "prior time of initial admixture between pop1 and pop2 is $initial_admix\n";}
+    }#define prior admixture expectation for genome 1 and genome2
+    if($line=~ /gen_initial_admix_p3/g){
+        $initial_admix2=$elements[1]; chomp $initial_admix2;
+        if(length($initial_admix2)==0){$initial_admix2=0;} else{print "prior time of initial admixture with pop3 is $initial_admix2\n";}
+    }#define prior admixture expectation for genome 1 and genome2  
     if($line=~ /per_site_error/g){
 	$error_prior=$elements[1]; chomp $error_prior;
 	if(length($error_prior)==0){$error_prior=0;}
@@ -362,7 +366,7 @@ $rec_geno=~ s/-par1//g;
     print HMMSCRIPT "cat $hyb_string > HMM.hybrid.files.list"."$tag"."\n";
     print HMMSCRIPT "cat $par_string >HMM.parental.files.list"."$tag"."\n";
 
-    print HMMSCRIPT "perl $path/combine_all_individuals_hmm_3way_v1.pl HMM.parental.files.list"."$tag HMM.hybrid.files.list"."$tag $minor_prior1 $minor_prior2 $parental_counts_status $initial_admix $focal_chrom $read_length $error_prior $tag\n";
+    print HMMSCRIPT "perl $path/combine_all_individuals_hmm_3way_v1.pl HMM.parental.files.list"."$tag HMM.hybrid.files.list"."$tag $minor_prior1 $minor_prior2 $parental_counts_status $initial_admix $initial_admix2 $focal_chrom $read_length $error_prior $tag\n";
 #!print "perl combine_all_individuals_hmm_v5.pl HMM.parental.files.list HMM.hybrid.files.list $minor_prior $parental_counts_status $initial_admix $focal_chrom $read_length $error_prior $tag\n";
 
     print HMMSCRIPT "perl $path/convert_rchmm_to_ancestry_tsv_3way_v1.pl current.samples.list current.samples.read.list $save_files $focal_chrom\n";

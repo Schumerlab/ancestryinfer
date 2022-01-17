@@ -1,7 +1,7 @@
 #perl! -w
 
 if(@ARGV<2){
-    print "perl combine_all_individuals_hmm.pl parental_list individual_list parental_prior counts initial_time_admix focal_chrom read_length\n";
+    print "perl combine_all_individuals_hmm.pl parental_list individual_list parental_prior counts initial_time_admix1 initial_time_admix2 focal_chrom read_length\n";
 }
 
 my $parental=shift(@ARGV); chomp $parental;
@@ -20,6 +20,8 @@ my $provide_counts=shift(@ARGV); chomp $provide_counts;
 
 my $initial_admix=shift(@ARGV); chomp $initial_admix;
 
+my $initial_admix2=shift(@ARGV); chomp $initial_admix2;
+
 my $focal_chrom=shift(@ARGV); chomp $focal_chrom;
 
 my $read_length=shift(@ARGV); chomp $read_length;
@@ -33,9 +35,14 @@ open READLIST, ">"."$current_read_list";
 
 my $prior_admix=0;
 if($initial_admix > 0){
-    print "prior admixture time provided: $initial_admix\n";
+    print "prior admixture time for p1 and p2 provided: $initial_admix\n";
     $prior_admix=1;
 }#check prior status
+my $prior_admix2=0;
+if($initial_admix2 > 0){
+    print "prior admixture time for p3 provided: $initial_admix2\n";
+    $prior_admix2=1;
+}#check prior status 
 
 my $set_focal_chrom=0;
 if($focal_chrom ne '0'){
@@ -185,8 +192,8 @@ system("mv $hmm_filter $final_hmm");
 
 ####run differently depending on whether prior generation is provided:
 my $par3_prior=1-$par1_prior-$par2_prior;
-#my $par1_prior=0.34; my $par2_prior=0.33; my $par3_prior=0.33;
-if($prior_admix==0){
+
+if(($prior_admix==0) && ($prior_admix2==0)){
     print "Running HMM "; print "ancestry_hmm -a 3 $par1_prior $par2_prior $par3_prior -p 0 -10000 $par1_prior -p 1 -100 $par2_prior -p 2 -100 $par3_prior -e $error_prior -s $current_sample_list -i $final_hmm\n";
     
     system("ancestry_hmm -a 3 $par1_prior $par2_prior $par3_prior -p 0 -10000 $par1_prior -p 1 -100 $par2_prior -p 2 -100 $par3_prior -e $error_prior --tolerance 1e-3 -s $current_sample_list -i $final_hmm");
@@ -195,19 +202,19 @@ if($prior_admix==0){
 
     if(($par1_prior ge $par2_prior) && ($par1_prior ge $par3_prior)){
 
-	print "Running HMM "; print "ancestry_hmm -a 3 $par1_prior $par2_prior $par3_prior -p 0 -10000 $par1_prior -p 1 $initial_admix $par2_prior -p 2 $initial_admix $par3_prior -e $error_prior --tolerance 1e-3 -s $current_sample_list -i $final_hmm\n";	
+	print "Running HMM "; print "ancestry_hmm -a 3 $par1_prior $par2_prior $par3_prior -p 0 -10000 $par1_prior -p 1 $initial_admix $par2_prior -p 2 $initial_admix2 $par3_prior -e $error_prior -s $current_sample_list -i $final_hmm\n";	
    
-	system("ancestry_hmm -a 3 $par1_prior $par2_prior $par3_prior -p 0 -10000 $par1_prior -p 1 $initial_admix $par2_prior -p 2 $initial_admix $par3_prior -e $error_prior --tolerance 1e-3 -s $current_sample_list -i $final_hmm");
+	system("ancestry_hmm -a 3 $par1_prior $par2_prior $par3_prior -p 0 -10000 $par1_prior -p 1 $initial_admix $par2_prior -p 2 $initial_admix2 $par3_prior -e $error_prior -s $current_sample_list -i $final_hmm");
 
     } elsif(($par2_prior ge $par1_prior) && ($par2_prior ge $par3_prior)){
-	print "Running HMM "; print "ancestry_hmm -a 3 $par1_prior $par2_prior $par3_prior -p 0 $initial_admix $par1_prior -p 1 -10000 $par2_prior -p 2 $initial_admix $par3_prior -e $error_prior --tolerance 1e-3 -s $current_sample_list -i $final_hmm\n";
+	print "Running HMM "; print "ancestry_hmm -a 3 $par1_prior $par2_prior $par3_prior -p 0 $initial_admix $par1_prior -p 1 -10000 $par2_prior -p 2 $initial_admix2 $par3_prior -e $error_prior -s $current_sample_list -i $final_hmm\n";
 
-	system("ancestry_hmm -a 3 $par1_prior $par2_prior $par3_prior -p 0 $initial_admix $par1_prior -p 1 -10000 $par2_prior -p 2 $initial_admix $par3_prior -e $error_prior --tolerance 1e-3 -s $current_sample_list -i $final_hmm");
+	system("ancestry_hmm -a 3 $par1_prior $par2_prior $par3_prior -p 0 $initial_admix $par1_prior -p 1 -10000 $par2_prior -p 2 $initial_admix2 $par3_prior -e $error_prior -s $current_sample_list -i $final_hmm");
     } else{
 
-        print "Running HMM "; print "ancestry_hmm -a 3 $par1_prior $par2_prior $par3_prior -p 0 $initial_admix $par1_prior -p 1 $initial_admix $par2_prior -p 2 -10000 $par3_prior -e $error_prior --tolerance 1e-3 -s $current_sample_list -i $final_hmm\n";
+        print "Running HMM "; print "ancestry_hmm -a 3 $par1_prior $par2_prior $par3_prior -p 0 $initial_admix $par1_prior -p 1 $initial_admix2 $par2_prior -p 2 -10000 $par3_prior -e $error_prior -s $current_sample_list -i $final_hmm\n";
 
-	system("ancestry_hmm -a 3 $par1_prior $par2_prior $par3_prior -p 0 $initial_admix $par1_prior -p 1 $initial_admix $par2_prior -p 2 -10000 $par3_prior -e $error_prior --tolerance 1e-3 -s $current_sample_list -i $final_hmm");
+	system("ancestry_hmm -a 3 $par1_prior $par2_prior $par3_prior -p 0 $initial_admix $par1_prior -p 1 $initial_admix2 $par2_prior -p 2 -10000 $par3_prior -e $error_prior -s $current_sample_list -i $final_hmm");
 
     }#format properly depending on which parent is the major parent
 
