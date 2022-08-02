@@ -183,16 +183,16 @@ system("mv $hmm_filter $final_hmm");
 ####run differently depending on whether prior generation is provided:
 my $par2_prior=1-$par1_prior;
 if($prior_admix==0){
-    print "Running HMM "; print "ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 -100 $par1_prior -p 1 -100 $par2_prior -e $error_prior -s $current_sample_list -i $final_hmm\n";
-    system("ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 -100 $par1_prior -p 1 -100 $par2_prior -e $error_prior -s $current_sample_list -i $final_hmm");
+    print "Running HMM "; print "ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 -10000 $par1_prior -p 1 -100 $par2_prior -e $error_prior -s $current_sample_list -i $final_hmm\n";
+    system("ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 -10000 $par1_prior -p 1 -100 $par2_prior -e $error_prior -s $current_sample_list -i $final_hmm");
 } else{
 
     if($par1_prior ge $par2_prior){
-	print "Running HMM "; print "ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 -100 $par1_prior -p 1 $initial_admix $par2_prior -e $error_prior -s $current_sample_list -i $final_hmm","\n";
-    system("ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 -100 $par1_prior -p 1 $initial_admix $par2_prior -e $error_prior -s $current_sample_list -i $final_hmm");
+	print "Running HMM "; print "ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 -10000 $par1_prior -p 1 $initial_admix $par2_prior -e $error_prior -s $current_sample_list -i $final_hmm","\n";
+    system("ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 -10000 $par1_prior -p 1 $initial_admix $par2_prior -e $error_prior -s $current_sample_list -i $final_hmm");
     } else{
-	print "Running HMM "; print "ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 $initial_admix $par1_prior -p 1 -100 $par2_prior -e $error_prior -s $current_sample_list -i $final_hmm","\n";
-    system("ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 $initial_admix $par1_prior -p 1 -100 $par2_prior -e $error_prior -s $current_sample_list -i $final_hmm");
+	print "Running HMM "; print "ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 $initial_admix $par1_prior -p 1 -10000 $par2_prior -e $error_prior -s $current_sample_list -i $final_hmm","\n";
+    system("ancestry_hmm -a 2 $par1_prior $par2_prior -p 0 $initial_admix $par1_prior -p 1 -10000 $par2_prior -e $error_prior -s $current_sample_list -i $final_hmm");
     }#format properly depending on which parent is the major parent
 
 }#if no gen is provided

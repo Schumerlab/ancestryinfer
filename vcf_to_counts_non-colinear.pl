@@ -65,13 +65,13 @@ while(my $line = <IN>){
 
 	my @bparray=();
 	push(@bparray,($ref,$alt));
-	my @sortedbp=sort { lc($a) cmp lc($b) } @bparray;
+	#!my @sortedbp=sort { lc($a) cmp lc($b) } @bparray;
 
 	#check that ref and alt are the same
 	my $ref_alt="$elements[9]"."$elements[10]"; my $alt_ref="$elements[10]"."$elements[9]"; my $true_ref_alt="$ref"."$alt";
 	#print "$elements[9]\t$elements[10]\n";
 	if(($ref_alt eq $true_ref_alt) or ($alt_ref eq $true_ref_alt)){
-	print OUT "$group"."_"."$pos"."_"."$sortedbp[0]"."_"."$sortedbp[1]\t$refcount\t$altcount\n";
+	print OUT "$group"."_"."$pos"."_"."$bparray[0]"."_"."$bparray[1]\t$refcount\t$altcount\n";
 	}#check alleleic concordance
 
 	#print "$geno\t$line\n";
@@ -87,11 +87,11 @@ while(my $line = <IN>){
 
 	    my @bparray=();
 	    push(@bparray,($ref,$alt));
-	    my @sortedbp=sort { lc($a) cmp lc($b) } @bparray;
+	    #!my @sortedbp=sort { lc($a) cmp lc($b) } @bparray;
 	    #check that ref and alt are the same                                                                             
             my $ref_alt="$elements[9]"."$elements[10]"; my $alt_ref="$elements[10]"."$elements[9]"; my $true_ref_alt="$ref"."$alt";
-	    if(($ref_alt eq$true_ref_alt) or ($alt_ref eq $true_ref_alt)){
-	    print OUT "$group"."_"."$pos"."_"."$sortedbp[0]"."_"."$sortedbp[1]\t$refcount\t$altcount\n";
+	    if(($ref_alt eq $true_ref_alt) or ($alt_ref eq $true_ref_alt)){
+	    print OUT "$group"."_"."$pos"."_"."$bparray[0]"."_"."$bparray[1]\t$refcount\t$altcount\n";
 	    }#check alleleic concordance    
 	}#hets
 	elsif($geno eq '0_0'){
@@ -105,8 +105,8 @@ while(my $line = <IN>){
 
 	    my @bparray=();
             push(@bparray,($ref,$alt));
-            my @sortedbp=sort { lc($a) cmp lc($b) } @bparray;
-            print OUT "$group"."_"."$pos"."_"."$sortedbp[0]"."_"."$sortedbp[1]\t$refcount\t$altcount\n";
+            #!my @sortedbp=sort { lc($a) cmp lc($b) } @bparray;
+            print OUT "$group"."_"."$pos"."_"."$bparray[0]"."_"."$bparray[1]\t$refcount\t$altcount\n";
 
 	}
 	#print "$refcount\t$altcount\n";
