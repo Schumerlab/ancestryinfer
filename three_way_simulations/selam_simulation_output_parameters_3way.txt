@@ -1,0 +1,1 @@
+50	0	50	50	admix_simulation_demography_output_results_3way.txt
